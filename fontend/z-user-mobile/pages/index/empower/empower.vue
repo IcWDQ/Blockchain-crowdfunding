@@ -18,70 +18,70 @@
 						<input type="text" value="" placeholder="请输入输入或粘贴SECRET_KEY内容" v-model="secret_key" style="width: 70%;"/>
 					</view> -->
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
-						<text style="width: 25%;">姓名：</text>
-						<input type="text" maxlength="8" v-model='info.name' placeholder="请输入姓名"  style="width: 70%;"/>
+						<text style="width: 25%;">Name：</text>
+						<input type="text" maxlength="8" v-model='info.name' placeholder="Please enter your name"  style="width: 70%;"/>
 					</view>
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
-						<text style="width: 25%;">身份证：</text>
-						<input type="idcard" v-model='info.id_card' placeholder="请输入18位身份证"  style="width: 70%;"/>
+						<text style="width: 25%;">ID：</text>
+						<input type="idcard" v-model='info.id_card' placeholder="Please enter your 18-digit ID card"  style="width: 70%;"/>
 					</view>
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
-						<text style="width: 25%;">职业：</text>
-						<input type="text" maxlength="8" v-model='info.career' placeholder="请输入职业"  style="width: 70%;"/>
+						<text style="width: 25%;">Job：</text>
+						<input type="text" maxlength="8" v-model='info.career' placeholder="Please enter your occupation"  style="width: 70%;"/>
 					</view>
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
-						<text style="width: 25%;">所在地区：</text>
-						<input type="text" maxlength="8" v-model='info.area' placeholder="请输入所在地区"  style="width: 70%;"/>
+						<text style="width: 25%;">Location：</text>
+						<input type="text" maxlength="8" v-model='info.area' placeholder="Please enter your region"  style="width: 70%;"/>
 					</view>
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
-						<text style="width: 25%;">手机：</text>
-						<input type="number" maxlength="11" v-model='info.mobile' placeholder="请输入联系方式"  style="width: 70%;"/>
+						<text style="width: 25%;">Phone Number：</text>
+						<input type="number" maxlength="11" v-model='info.mobile' placeholder="Please enter your contact information"  style="width: 70%;"/>
 					</view>
-					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
-						<text style="width: 25%;">最高学历：</text>
-						<input type="text" maxlength="8" v-model='info.degree' placeholder="请输入学历"  style="width: 70%;"/>
+	<!-- 				<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
+						<text style="width: 25%;">Highest education：</text>
+						<input type="text" maxlength="8" v-model='info.degree' placeholder="Please enter academic qualifications"  style="width: 70%;"/>
 					</view>
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
 						<text style="width: 25%;">毕业院校：</text>
 						<input type="text" maxlength="8" v-model='info.school' placeholder="请输入毕业院校"  style="width: 70%;"/>
-					</view>
-					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
+					</view> -->
+				<!-- 	<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
 						<text style="width: 25%;">个人介绍：</text>
 						<input type="text" maxlength="8" v-model='info.info' placeholder="请输入个人"  style="width: 70%;"/>
-					</view>
-					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
+					</view> -->
+					<!-- <view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
 						<text style="width: 25%;">微信：</text>
 						<input type="text" maxlength="8" v-model='info.wx' placeholder="请输入微信"  style="width: 70%;"/>
 					</view>
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
 						<text style="width: 25%;">WhatsApp：</text>
 						<input type="text" maxlength="8" v-model='info.whatsapp' placeholder="请输入QQ"  style="width: 70%;"/>
-					</view>
+					</view> -->
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
-						<text style="width: 25%;">email：</text>
-						<input type="text" maxlength="8" v-model='info.email' placeholder="请输入邮箱"  style="width: 70%;"/>
+						<text style="width: 25%;">Email：</text>
+						<input type="text" maxlength="8" v-model='info.email' placeholder="Please enter email"  style="width: 70%;"/>
 					</view>
-					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
+<!-- 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
 						<text style="width: 25%;">联系地址：</text>
 						<input type="text" maxlength="8" v-model='info.address' placeholder="请输入联系地址"  style="width: 70%;"/>
 					</view>
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
 						<text style="width: 25%;">工作单位：</text>
 						<input type="text" maxlength="8" v-model='info.work_address' placeholder="请输入工作单位"  style="width: 70%;"/>
-					</view>
+					</view> -->
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20 jui_bor_bottom jui_pad_b20">
-						<text style="width: 35%;">相关资料上传：</text>
+						<text style="width: 35%;">Others：</text>
 						<uni-file-picker  ref="files" :auto-upload="false"/>
-								<button @click="upload">上传文件</button>
+								<button @click="upload">Upload Files</button>
 					</view>
 					<view class="jui_flex  jui_flex_items_center justify-between jui_pad_t20" v-if="exchange_house_id == 4">
-						<text style="width: 25%;">密码：</text>
-						<input type="password" value="" placeholder="请输入输入密码" v-model="pass_phrase" style="width: 70%;"/>
+						<text style="width: 25%;">Passwords：</text>
+						<input type="password" value="" placeholder="passwords" v-model="pass_phrase" style="width: 70%;"/>
 					</view>
 				</view>
 				<view class="jui_h80">	</view>
 				<view class="zhuse  shouquan" @tap='empowerApi'>
-					发起授权认证
+					Initiate authorization
 				</view>
 			</view>
 			<view class="jui_bg_f5f jui_lrtop jui_pad_2432 jui_flex jui_flex_justify_between  jui_flex_items_center" v-else>
