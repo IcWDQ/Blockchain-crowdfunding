@@ -3,27 +3,25 @@
 	<view class="YmContent">
 			<view class="commodity_details_1" style="height: 2600rpx;">
 				<!-- <image v-on:click="commodity_details_2_2_click()"  src="/static/commodity_details/images/commodity_details_2_2.jpg" mode="scaleToFill" border="0"    class="commodity_details_2"></image> -->
-				<h2 style="font-size: 34px; text-align: center;">{{task.name}}</h2>
+				<h2 style="font-size: 34px; text-align: center;">小程序人脸融合系统</h2>
 				<view class="commodity_details_3">
 					<!-- <image v-on:click="commodity_details_13_13_click()"  src="/static/commodity_details/images/commodity_details_13_13.jpg" mode="scaleToFill" border="0"    class="commodity_details_13"></image> -->
 					
 					<text decode="true" class="commodity_details_15">总金额</text>
-					<!-- <text decode="true" class="commodity_details_14">{{task.price}} RMB</text> -->
-					<text decode="true" style="font-size: 20px; position: absolute; right: 10%; background-color: bisque;" >查看投资情况</text>
-					
+					<text decode="true" class="commodity_details_14">20000 RMB</text>
 				</view>
 				<view class="commodity_details_4">
 				</view>
 				<text decode="true" class="commodity_details_5">项目详情</text>
-				<text decode="true" class="commodity_details_6" style="max-height: 600px; overflow: hidden;">{{task.task_desc}}</text>
+				<text decode="true" class="commodity_details_6" style="max-height: 600px; overflow: hidden;">小程序人脸融合系统是一种基于人工智能技术的图像处理工具，可以将两张人脸照片进行融合，生成全新的人脸图像。用户只需上传两张照片，系统会自动识别人脸特征并进行融合，操作简单快捷。此技术可应用于娱乐、艺术创作等领域，为用户提供全新的视觉体验。小程序人脸融合系统是一种基于人工智能技术的图像处理工具，可以将两张人脸照片进行融合，生成全新的人脸图像。用户只需上传两张照片，系统会自动识别人脸特征并进行融合，操作简单快捷。此技术可应用于娱乐、艺术创作等领域，为用户提供全新的视觉体验。小程序人脸融合系统是一种基于人工智能技术的图像处理工具，可以将两张人脸照片进行融合，生成全新的人脸图像。用户只需上传两张照片，系统会自动识别人脸特征并进行融合，操作简单快捷。此技术可应用于娱乐、艺术创作等领域，为用户提供全新的视觉体验。</text>
 				<text decode="true" class="commodity_details_5" >项目里程碑</text>
-				<text decode="true" class="commodity_details_6" style="height: 500rpx;">{{lcb}}</text>
+				<text decode="true" class="commodity_details_6" style="height: 500rpx;">1、目标：启动资金。金额：3000。状态：已启动。进度：1200/3000;\n 2、目标：开发。金额：10000。状态：未启动。进度：0/10000\n  3、目标：上线。金额：7000。状态：未启动。进度：0/7000</text>
 				<text decode="true" class="commodity_details_7" style="width: 200rpx;">奖励详细说明</text>
-				<text decode="true" class="commodity_details_8">该项目奖励为：{{task.reward_type}}\n 详细：{{task.reward_desc}}</text>
+				<text decode="true" class="commodity_details_8">1.里程碑1奖励：10%股权，按百分比分配;\n	2.里程碑2奖励：30%股权，按百分比分配;\n	3.里程碑3奖励：20%股权，按百分比分配;</text>
 				<text decode="true" class="commodity_details_5" style="width: 300rpx;">项目创建者详情</text>
-				<text decode="true" class="commodity_details_6" style="max-height: 600px; overflow: hidden;">{{user}}</text>
+				<text decode="true" class="commodity_details_6" style="max-height: 600px; overflow: hidden;">姓名：XX\n 职业：XX \n 介绍：XXX\n</text>
 				
-				<!-- <text decode="true" class="commodity_details_9">点击投资即代表您已阅读并同意《投资协议》</text> -->
+				<text decode="true" class="commodity_details_9">点击投资即代表您已阅读并同意《投资协议》</text>
 				<view class="commodity_details_10">
 					<image v-on:click="commodity_details_11_11_click()"  src="/static/commodity_details/images/commodity_details_11_11.jpg" mode="scaleToFill" border="0"    class="commodity_details_11"></image>
 					<text decode="true" class="commodity_details_12" >点击投资</text>
@@ -38,11 +36,11 @@
 				<view class="p36r bor-b fw-w l-h1">投诉该项目</view>
 				<view class="p36r ">
 					<view class="" style="text-align: center;">
-						<input placeholder="请输入投诉内容" v-model="tousu"></input></br>
+						<input placeholder="请输入投诉内容"></input></br>
 						<!-- <text class="color-or" >请提前准备相关资料！</text> -->
 						<!-- <text class="">以上，并且锁定期{{activation_day}}天，{{activation_day}}天后可提现。</text> -->
 					</view>
-					<!-- <view class="bg-zs color-fff x-c h68r bor-rad10r mt30r" @tap="submit()">投诉</view> -->
+					<view class="bg-zs color-fff x-c h68r bor-rad10r mt30r" @tap="tousu()">投诉</view>
 				</view>
 			</view>
 		</uni-popup>
@@ -54,10 +52,7 @@ export default {
 		data() {
 			return {
 				loadingText: '',
-				task: {},
-				tousu: '',
-				lcb: '',
-				user: '',
+ 
 				page:0,//当前分页页码
 				apiUrl:'https://www.ymznkf.com/wx_server',//后端接口地址
 				id:'',//传值使用,方便存在本地的locakStorage  
@@ -67,30 +62,26 @@ export default {
 		components:{
 
 		},
-		// onNavigationBarButtonTap(e) {
+		onNavigationBarButtonTap(e) {
 
-		// 	if(e.text =='投诉'){
-		// 		this.$refs.popup.open()
-		// 	}
-		// 	if(e.text =='交流'){
-		// 		uni.navigateTo({
-		// 			url: '/pages/index/card/uni-comment?task_id='+ this.task.task_id
-		// 		})
-		// 	}
-		// },
+			if(e.text =='投诉'){
+				this.$refs.popup.open()
+			}
+			if(e.text =='交流'){
+				uni.navigateTo({
+					url: '/pages/index/card/uni-comment'
+				})
+			}
+		},
 		onLoad(options) {
-			console.log(options)
-			var that = this
-			this.$api.get_task_detail({task_id:options.task_id}).then(res => {
-				console.log(res)
-				if(res.code ==  10000){
-					that.task = res.data.task
-					var u = res.data.user
-					for (var i=0;i<that.task.inputItems.length;i++)
-						that.lcb = that.lcb+ '里程碑' + (i+1).toString() +'： 目标：'+that.task.inputItems[i].text+ '。 金额：'+that.task.inputItems[i].price+'。 天数：'+that.task.inputItems[i].day+'。 截止时间：'+that.task.inputItems[i].last_day+'\n'
-					}
-					that.user = `姓名: ${u.valid_infos.name}  职业：${u.valid_infos.career}\n学位：${u.valid_infos.degree} 院校：${u.valid_infos.school}\n 手机：${u.valid_infos.mobile} 邮箱：${u.valid_infos.email}\n 区域：${u.valid_infos.area} 联系地址：${u.valid_infos.address}\n 个人介绍：${u.valid_infos.info} \n `
-				});
+			var _self = this;
+			
+			//检查是否登录参考代码,需要用的时候，可以把注释取掉
+			//if(this.checkLogin()==false){
+			//	return;
+			//}
+			
+			//this.getLaction();//得到gps
 
 			this.page=0;
 
@@ -116,35 +107,13 @@ export default {
 			this.Refresh();
 		},
 		methods: {
-			submit(){
-				if(this.tousu.length<5){
-					uni.showToast({
-						title: '请输入超过5个字',
-						icon: 'none',
-						duration: 2000
-					})
-					return
-				}
+			tousu(){
 				this.$refs.popup.close();
-				var user = uni.getStorageSync('loginInfo')
-				var data = {
-					task_id : this.task_id,
-					tousu : this.tousu,
-					user: {username: user.username, user_id: user.user_id}
-				}
-				var that = this
-				this.$api.add_task_tousu(data).then(res => {
-					console.log(res)
-					if(res.code ==  10000){
-						that.tousu = ''
-						uni.showToast({
-							duration:2000,
-							title:'已收到您的投诉，谢谢',
-							icon: 'none'
-						})
-						}
-						
-					});
+				uni.showToast({
+					duration:1000,
+					title:'已收到您的投诉，谢谢！',
+					icon: 'none'
+				})
 			},
 			/**
 			* commodity_details_2_2处理函数

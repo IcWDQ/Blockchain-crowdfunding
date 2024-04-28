@@ -9,7 +9,7 @@
 					我投资的项目：
 				</view>
 				<view class="jui_mar_t14" style="">
-					{{result.invest_count}} 个
+					0 个
 				</view>
 			</view>
 			<view class="">
@@ -17,7 +17,7 @@
 					我创建的项目：
 				</view>
 				<view class="jui_mar_t14">
-					{{result.create_count}} 个
+					2 个
 				</view>
 			</view>
 		</view>
@@ -47,12 +47,12 @@
 								</view>
 							</view>
 						</view> -->
-						<view class="jui_mar_2432" v-for="(item,index) in tasks" :key="index" style="margin-bottom: 40rpx;">
+						<view class="jui_mar_2432" v-for="(item,index) in orderlist" :key="index" style="margin-bottom: 40rpx;">
 							<view class="jui_flex jui_flex_items_center jui_flex_justify_between" >
 								<view class="jui_flex jui_flex_items_center ">
-									项目名称：<view class="red"  style="color:blue;">
+									项目名称：<view class="red"  style="color: red;">
 										
-										{{item.name}}
+										基于区块链的里程碑式众筹平台
 									</view>
 									
 								</view>
@@ -62,10 +62,10 @@
 								</view> -->
 							</view>
 							众筹总额：<view class="jui_mar_l20 jui_fs32 col  jui_mar_t12" style="display: inline-flex ; color: red;">
-								{{item.price}}
+								120000
 								<view class="jui_bg_zhuse jui_fc_fff"
 									style="position: absolute;  right: 20rpx; font-size: 34rpx;"
-									@tap="submit(item.task_id)">
+									@tap="submit()">
 									查看详情
 								</view>
 							</view>
@@ -76,7 +76,7 @@
 											里程碑数量
 										</view>
 										<view class="jui_fc_333  jui_mar_t12">
-											{{item.inputItems.length}}
+											2
 										</view>
 									</view>
 									<view class="jui_flex_col_center" style="width: 45%;">
@@ -92,17 +92,29 @@
 											状态
 										</view>
 										<view class="col  jui_mar_t12">
-											{{item.status}}
+											0 / 2
 										</view>
 									</view>
 								</view>
-								<view class="jui_flex jui_flex_justify_start jui_flex_items_center jui_mar_t20" v-for="(lcb,index2) in item.inputItems">
+								<view class="jui_flex jui_flex_justify_start jui_flex_items_center jui_mar_t20">
 									<view class="" style="width: 80%;">
 										<view class="jui_fc_999 ">
-											里程碑{{index2+1}}
+											里程碑1
 										</view>
 										<view class="jui_fc_333  jui_mar_t12" style="word-wrap: break-word; ">
-											目标：{{lcb.text }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;周期: {{lcb.day}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;金额:<text style="color: red;">{{lcb.price}}</text>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											目标：开发完成XXXX设计完成XXX，金额:40000
+										</view>
+									</view>
+									
+								</view>
+								<view class="jui_flex jui_flex_justify_start jui_flex_items_center jui_mar_t20">
+									
+									<view class="" style="width: 80%;">
+										<view class="jui_fc_999 ">
+											里程碑2
+										</view>
+										<view class="jui_fc_333  jui_mar_t12" style="word-wrap: break-word; ">
+											目标：西安的玩打我打我的爱我的安慰带娃带娃带娃带娃 大吾哇完成XXXX设计完成XXX，金额:80000
 										</view>
 									</view>
 									
@@ -120,7 +132,7 @@
 					</scroll-view>
 				</view>
 				
-				<view class="none" v-if="!tasks" >
+				<view class="none" v-if="!orderlist.length" >
 					暂无数据
 				</view>
 			</view>
@@ -137,8 +149,6 @@
 					{text:'我创建的'},
 					{text:'我投资的'}
 				],
-				result :{invest_count:0, create_count:0},
-				tasks:{},
 				tabIndex:0,
 				type:0,
 				page:1,
@@ -155,12 +165,12 @@
 				this.tabIndex=options.index
 			}
 			
-			this.my_task()
+			// this.electlist()
 		},
 		methods: {
-			submit(task_id){
+			submit(){
 				uni.navigateTo({
-					url: '/pages/task/commodity_details/commodity_details?task_id='+task_id
+					url: '/pages/task/commodity_details/commodity_details?id=1'
 				})
 				 
 			},
@@ -170,17 +180,32 @@
 					this.electlist();
 				}
 			},
-			my_task(){
-				var that = this 
-				this.$api.get_my_task({user_id:uni.getStorageSync('loginInfo').user_id}).then(res => {
-						console.log(res)
-						if(res.code ==  10000){
-							this.result = res.data
-							this.tasks = res.data.create_task
-							
-							
+			electlist(){
+				let data = {
+					page:this.page,
+					data_list:20,
+					// type:this.type
+				}
+				this.$api.getBill(data).then(res => {
+						this.total = res.data;
+						if(this.tabIndex == 0){
+							this.list = [...this.list, ...res.data.today_data_list.data];
+							if (res.data.today_data_list.data.length == 0) {
+								this.hasMore = false
+							} else {
+								this.hasMore = true
 							}
-						});
+						}else {
+							this.list = [...this.list, ...res.data.total_data_list.data]
+							if (res.data.total_data_list.data.length == 0) {
+								this.hasMore = false
+							} else {
+								this.hasMore = true
+							}
+						}
+						
+						
+				});
 			},
 			chooseTab(item, index) {
 				this.page = 1;
