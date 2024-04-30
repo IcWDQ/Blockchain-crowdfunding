@@ -1,7 +1,7 @@
 import http from './interface'
 const apiList = {
 	
-	//注册
+	//register
 	user_add: (data) => {
 		return http.request({
 			url: 'api/user/register',
