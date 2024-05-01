@@ -28,7 +28,7 @@ export default {
 		return {
 			emptyData: {
 				img: '/static/imgs/home/empty_goods.png',
-				tip: '暂无数据~'
+				tip: 'No data so far'
 			},
 			faqList: [],
 			loadStatus: '', //loading,over
@@ -38,9 +38,9 @@ export default {
 	},
 	onLoad() {
 		
-		// let num = base64.encode('123:456')//编码 MTIzOjQ1Ng==
-		// let num1 = base64.decode(num)//解码 '123:456'
-		// let num2 = num1.split(":")[1] //截取冒号后面的字符串  '456'
+		// let num = base64.encode('123:456')//code MTIzOjQ1Ng==
+		// let num1 = base64.decode(num)//encode '123:456'
+		// let num2 = num1.split(":")[1] //Intercepts the string after the colon  '456'
 		// console.log(num , num1,num2)
 	},
 	onShow() {
@@ -61,7 +61,7 @@ export default {
 				}
 			});
 		},
-		// 常见问题列表
+		// common probem list
 		getFaqList() {
 			let that = this;
 			var data = {
@@ -109,7 +109,7 @@ export default {
 				// }
 			});
 		},
-		// 加载更多
+		// load more data
 		loadMore() {
 			if (this.hasMore) {
 				this.page += 1;

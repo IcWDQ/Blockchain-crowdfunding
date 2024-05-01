@@ -1,6 +1,6 @@
 /**
- * 通用uni-app网络请求
- * 基于 Promise 对象实现更简单的 request 使用方式，支持请求和响应拦截
+ * General uni-app network request
+ * A simpler way to use request based on Promise objects, with support for request and response interception
  */
 import tool from '../tool/tool'
 import global from './global.js'
@@ -14,7 +14,7 @@ export default {
 		data: {},
 		method: "GET",
 		dataType: "json",
-		/* 如设为json，会对返回的数据做一次 JSON.parse */
+		/* If set to json, the returned data will be done once JSON.parse */
 		responseType: "text",
 		success() {},
 		fail() {},
@@ -61,7 +61,7 @@ export default {
 						response = newResponse
 					}
 				}
-				// 统一的响应日志记录
+				// Uniform response logging
 				// _reslog(response)
 				let {
 					code,

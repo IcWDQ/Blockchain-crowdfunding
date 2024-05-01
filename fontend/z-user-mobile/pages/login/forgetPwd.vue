@@ -31,7 +31,7 @@
 			</view>
 			<view class="">
 				<view @tap="login" class="login jui_bor_rad_10 pad jui_text_center   jui_fc_fff  jui_fs30">
-					登录
+					Login
 				</view>
 			</view>
 		</view>
