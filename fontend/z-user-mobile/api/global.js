@@ -2,11 +2,11 @@ var baseUrl = ""
 
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV == 'production') {
-	/* 生产环境 */
+	/* Production environment */
 	// baseUrl = "http://127.0.0.1:10040/"
 	baseUrl = "http://124.222.186.235:10040/"
 } else {
-	/* 开发环境 */
+	/* Development environment */
 	// baseUrl = "http://127.0.0.1:10040/"
 	baseUrl = "http://124.222.186.235:10040/"
 }

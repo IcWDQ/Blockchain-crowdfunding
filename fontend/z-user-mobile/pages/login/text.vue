@@ -17,37 +17,37 @@
 		            </ul>
 		        </li>
 		        <li>
-		            <h3>投资条件</h3>
-		            <p>投资者在参与众筹链项目投资前，应满足以下条件：</p>
+		            <h3>Investment terms</h3>
+		            <p>Investors should meet the following conditions before investing in crowdfunding chain projects：</p>
 		            <ul>
-		                <li>年满18周岁，具备完全民事行为能力；</li>
-		                <li>了解并同意本协议的所有内容；</li>
-		                <li>具备一定的投资经验和风险承受能力。</li>
+		                <li>At least 18 years old, with full capacity for civil conduct；</li>
+		                <li>Understand and agree to all contents of this agreement；</li>
+		                <li>Have certain investment experience and risk tolerance.</li>
 		            </ul>
 		        </li>
 		        <li>
-		            <h3>投资流程</h3>
-		            <p>投资者参与众筹链项目投资的流程如下：</p>
+		            <h3>Investment process</h3>
+		            <p>The process for investors to participate in crowdfunding chain project investment is as follows:</p>
 		            <ol>
-		                <li>注册并登录众筹链平台；</li>
-		                <li>选择感兴趣的众筹链项目；</li>
-		                <li>阅读项目详情，了解项目背景、预期收益等信息；</li>
-		                <li>根据个人投资意愿和风险承受能力，选择合适的投资金额；</li>
-		                <li>支付投资款项；</li>
-		                <li>等待项目上线，获取投资收益。</li>
+		                <li>Register and log in to the crowdfunding chain platform;</li>
+		                <li>Select the crowdfunding chain project you are interested in;</li>
+		                <li>Read the project details, understand the project background, expected benefits and other information;</li>
+		                <li>Choose the appropriate investment amount according to personal investment willingness and risk tolerance;</li>
+		                <li>Payment of investment;</li>
+		                <li>Wait for the project to go online and get the investment income.</li>
 		            </ol>
 		        </li>
 		        <li>
-		            <h3>投资收益与风险</h3>
-		            <p>投资者在参与众筹链项目投资时，应充分了解项目的预期收益和潜在风险，自行承担投资风险。</p>
+		            <h3>Investment returns and risks</h3>
+		            <p>When investing in crowdfunding chain projects, investors should fully understand the expected returns and potential risks of the projects and bear the investment risks themselves.</p>
 		        </li>
 		        <li>
-		            <h3>项目上线与退款</h3>
-		            <p>项目发起人在规定时间内完成项目上线后，投资者将按照约定的投资比例获得相应的投资收益。如项目未能按时上线，投资者可申请退款。</p>
+		            <h3>Project online and refund</h3>
+		            <p>After the project sponsor completes the project online within the specified time, the investor will receive the corresponding investment income in accordance with the agreed investment proportion. If the project does not come online on time, investors can apply for a refund.</p>
 		        </li>
 		        <li>
-		            <h3>争议解决</h3>
-		            <p>本协议的解释权归众筹链平台所有。如双方在履行本协议过程中发生争议，应首先友好协商解决；协商不成的，任何一方均有权向有管辖权的人民法院提起诉讼。</p>
+		            <h3>Dispute resolution</h3>
+		            <p>The right to interpret this agreement belongs to the Crowdfunding chain platform. Any dispute arising from the performance of this Agreement shall be settled through friendly negotiation. If no agreement can be reached through consultation, either party shall have the right to bring a lawsuit to the people's court with jurisdiction.</p>
 		        </li>
 		    </ol>
 		<view v-html="text"></view>
