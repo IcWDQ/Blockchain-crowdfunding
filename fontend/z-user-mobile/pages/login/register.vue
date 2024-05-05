@@ -2,50 +2,50 @@
 	<view class="page">
 		<view class="jui_h60"></view>
 		<view class="tit">
-			User registration
+			用户注册
 		</view>
 		<view class="content">
 			<view class="list">
-				<input type="text" placeholder="Please enter a nickname" v-model="name">
+				<input type="text" placeholder="请输入昵称" v-model="name">
 			</view>
 			<view class="list">
-				<input type="number" maxlength="11" placeholder="Please enter your mobile number" v-model="phoneNumber">
+				<input type="number" maxlength="11" placeholder="请输入手机号码" v-model="phoneNumber">
 			</view>
 <!-- 			<view class="list">
-				<input type="text" placeholder="Please enter the graphic verification code" v-model="picCode">
+				<input type="text" placeholder="请输入图形验证码" v-model="picCode">
 				<image :src="verificationCode" style="width: 200upx;height: 60upx" @tap="codePic()"></image>
 			</view> -->
 			<view class="list">
-				<input type="text" placeholder="The SMS verification code is 123456" v-model="code.y_code">
+				<input type="text" placeholder="短信验证码为123456" v-model="code.y_code">
 				<view class="get-code jui_flex jui_flex_justify_end jui_flex_items_center jui_fc_zhuse jui_fs28"
 					:disabled="code.status" @tap="getCode">{{ code.text }}</view>
 			</view>
 
 			<view class="list">
-				<input :type="iptType" placeholder="Please enter your login password" v-model="passwd" class="ipt">
+				<input :type="iptType" placeholder="请输入登录密码" v-model="passwd" class="ipt">
 				<image :src="imgSrc" @click="changeType()"></image>
 			</view>
 			<view class="list">
-				<input :type="iptType" placeholder="Please enter your login password" v-model="confirm_password" class="ipt">
+				<input :type="iptType" placeholder="请输入确认登录密码" v-model="confirm_password" class="ipt">
 
 			</view>
-			<view class="list">
-				<input type="number" maxlength="6"  placeholder="Please enter a six-digit trading password" v-model="safe_pwd" class="ipt" />
+			<!-- <view class="list">
+				<input type="number" maxlength="6"  placeholder="请输入六位交易密码" v-model="safe_pwd" class="ipt" />
 			</view>
 			<view class="list">
-				<input type="number" maxlength="6"  placeholder="Please enter your secure transaction password" v-model="confirm_safe_pwd" class="ipt" />
+				<input type="number" maxlength="6"  placeholder="请输入确认安全交易密码" v-model="confirm_safe_pwd" class="ipt" />
 			</view>
 			<view class="list">
-				<input type="text" placeholder="Please enter the invitation code" v-model="invi_code" :disabled='status' />
-			</view>
+				<input type="text" placeholder="请输入邀请码" v-model="invi_code" :disabled='status' />
+			</view> -->
 			<view class="bot" @tap="check">
 				<view class=" border jui_mar_r16">
 					<image :src="pic"></image>
 				</view>
 				<view>
-					<text class="jui_fc_000">agree</text>
+					<text class="jui_fc_000">同意</text>
 					<text @tap.stop="jump('/pages/login/text')" class="jui_fc_zhuse">
-						《Terms of Use for Crowdfunding Chain Project Investment》
+						《众筹链项目投资使用条款》
 					</text>
 				</view>
 			</view>
@@ -53,7 +53,7 @@
 			</view>
 			<view class="">
 				<view @tap="register" class="login jui_bor_rad_10 pad jui_text_center   jui_fc_fff  jui_fs30">
-					Sign in
+					注册
 				</view>
 			</view>
 		</view>
@@ -75,7 +75,7 @@
 				imgSrc: view,
 				noView: '/static/imgs/home/view.png',
 				code: {
-					text: 'Get verification code',
+					text: '获取验证码',
 					status: false,
 					y_code: ''
 				},
@@ -88,10 +88,10 @@
 				status: false,
 				pic: '/static/imgs/checked.png',
 				name: '',
-				verificationCode: '', //Graphic captcha picture,
-				verificationNumber: '', //Graphic verification code,
+				verificationCode: '', //图形验证码图片,
+				verificationNumber: '', //图形验证码,
 				FromToken: '',
-				picCode: '' //Bid verification
+				picCode: '' //标单验证
 			}
 		},
 		onLoad(option) {
@@ -102,7 +102,7 @@
 				this.status = true;
 			}
 			uni.setNavigationBarTitle({
-				title: "Sign in"
+				title: "注册"
 			})
 		},
 		onShow() {
@@ -179,74 +179,60 @@
 			register() {
 
 				uni.hideKeyboard()
-				//Template sample section validation gauge
-				//The verification code is an example. In actual use, 
-				//the server should check whether the verification code is correct.
+				//模板示例部分验证规
+				//示例验证码，实际使用中应为请求服务器比对验证码是否正确。
 				if (this.name == '') {
-					this.$msg('Please enter your username');
+					this.$msg('请输入用户名');
 					return false;
 				}
-				if (this.phoneNumber == '') {
-					this.$msg('Please enter your phone number');
+				if (this.phoneNumber == '' ||  this.phoneNumber.length !=11) {
+					this.$msg('请输入正确的手机号');
 					return false;
 				}
 				if (this.code.y_code == '') {
-					this.$msg('Please enter the verification code');
+					this.$msg('请输入验证码');
 					return false;
 				}
-				if (!this.passwd) {
-					this.$msg('Please enter your login password');
+				if (!this.passwd || this.passwd.length <=6) {
+					this.$msg('请输入6位以上登录密码');
 					return false;
 				}
 				if (!this.confirm_password) {
-					this.$msg('Please enter Confirm login password');
+					this.$msg('请输入确定登录密码');
 					return false;
 				}
-				if (!this.safe_pwd) {
-					this.$msg('Please enter your trading password');
+				if (this.passwd != this.confirm_password) {
+					this.$msg('两次输入的登录密码不同');
 					return false;
 				}
-				if (!this.confirm_safe_pwd) {
-					this.$msg('Please enter the confirm trading password');
-					return false;
-				}
-				if (!this.invi_code) {
-					this.$msg('Please enter the invitation code');
+				if (this.safe_pwd != this.confirm_safe_pwd) {
+					this.$msg('两次输入的交易密码不同');
 					return false;
 				}
 				console.log(this.pic)
 				if (this.pic == '/static/imgs/check.png') {
-					this.$msg('Please agree to the terms of use');
+					this.$msg('请同意使用条款');
 					return false;
 				}
 				let data = {
 					username: this.name,
 					mobile: this.phoneNumber,
-					mobile_code: this.code.y_code,
 					password: this.passwd,
-					password2: this.confirm_password,
 					safe_pwd: this.safe_pwd,
-					safe_pwd2: this.confirm_safe_pwd,
-					invite_code: this.invi_code,
-					FromToken: this.FromToken
 				}
 				console.log(data)
-				this.$api.register(data).then(res => {
-					if (res.code == 1) {
-						this.$msg(res.msg);
-						if (this.invi_code) {
-							setTimeout(function() {
-								uni.navigateTo({
-									url: '/pages/login/webwiew'
-								})
-							}, 800);
-						} else {
-							setTimeout(function() {
-								uni.navigateTo({
-									url: '/pages/login/login'
-								})
-							}, 800);
-						}
+				var that = this
+				this.$api.user_add(data).then(res => {
+					console.log(res)
+					if (res.code == 10000) {
+						this.$msg('注册成功请登录');
+						
+						setTimeout(function() {
+							uni.navigateTo({
+								url: '/pages/login/login?m='+that.phoneNumber,
+							})
+						}, 2000);
+						
 					}
 
 				})
@@ -255,7 +241,7 @@
 			getCode() {
 				let that = this;
 				if (!/^1(3|4|5|6|7|8|9)\d{9}$/.test(that.phoneNumber)) {
-					that.$msg('Please fill in the correct mobile phone number');
+					that.$msg('请填写正确手机号码');
 					return false;
 				}
 				let countdown = 60;
@@ -266,29 +252,29 @@
 					uuid: that.verificationNumber,
 					send_type: 1
 				};
-				that.code.text = countdown + 'seconds';
+				that.code.text = countdown + '秒';
 				that.code.status = true;
 				let timer = setInterval(() => {
 					if (countdown > 0) {
-						that.code.text = countdown - 1 + 'seconds';
+						that.code.text = countdown - 1 + '秒';
 						countdown--;
 					} else {
 						clearInterval(timer);
-						that.code.text = 'Get verification code';
+						that.code.text = '获取验证码';
 						that.code.status = false;
 					}
 				}, 1000);
 				// that.$api.GetMobileCode(data).then(res => {
 				// 	if (res.code === 1) {
-				// 		that.code.text = countdown + 'seconds';
+				// 		that.code.text = countdown + '秒';
 				// 		that.code.status = true;
 				// 		let timer = setInterval(() => {
 				// 			if (countdown > 0) {
-				// 				that.code.text = countdown - 1 + 'seconds';
+				// 				that.code.text = countdown - 1 + '秒';
 				// 				countdown--;
 				// 			} else {
 				// 				clearInterval(timer);
-				// 				that.code.text = 'Get verification cod';
+				// 				that.code.text = '获取验证码';
 				// 				that.code.status = false;
 				// 			}
 				// 		}, 1000);
