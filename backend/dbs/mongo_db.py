@@ -3,7 +3,7 @@
 import pymongo
 from pymongo.errors import ConnectionFailure
 
-from settings import MONGO_URI, CONSTANT_MONGO_DB_NAME
+from settings import MONGO_URI
 
 ObjectId = pymongo.collection.ObjectId
 MONGO_DESCENDING = pymongo.DESCENDING
@@ -28,11 +28,11 @@ class MongoDB(object):
     Mongodb操作类
     """
 
-    def __init__(self, table, db_name=None, mongo_uri=MONGO_URI):
-        self._db_name = db_name or CONSTANT_MONGO_DB_NAME
-        self.mongo_client = pymongo.MongoClient(mongo_uri.format(db=self._db_name))
-        self.db = self.mongo_client[self._db_name]
+    def __init__(self, table, mongo_uri=MONGO_URI):
+        self.mongo_client = pymongo.MongoClient(mongo_uri)
+        self.db = self.mongo_client['chain']
         self.table = self.db[table]
+
 
     def __enter__(self):
         return self
@@ -100,6 +100,6 @@ class MongoDB(object):
 
 
 if __name__ == '__main__':
-    with MongoDB('test_table') as mongo:
+    with MongoDB('chain') as mongo:
         q = mongo.insertOne({'t': 1})
         print(q)
