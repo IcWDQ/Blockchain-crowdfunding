@@ -1,15 +1,17 @@
-
-
+// src/components/CreateProject/CreateProject.js
 import React from 'react';
 import { ethers } from 'ethers';
-import { provider, contract } from '../ethers';
-import '../App.css';
+import { provider, contract } from '../../ethers';
+import { useNavigate } from 'react-router-dom';
+import './CreateProject.css';
 
 function CreateProject() {
   const fundingGoal = '0.04'; // 0.04 Ether
   const milestoneGoals = ['0.02', '0.02']; // 两个里程碑，每个目标是 0.02 Ether
   const milestoneDeadlines = ['10', '20']; // 里程碑 1 截止日期为 10 天，里程碑 2 截止日期为 20 天
   const fundingTimeout = '604800'; // 7 天
+
+  const navigate = useNavigate(); // 初始化 useNavigate 钩子
 
   const createProject = async (event) => {
     event.preventDefault();
@@ -37,7 +39,7 @@ function CreateProject() {
   };
 
   return (
-    <div>
+    <div className="create-project-container">
       <h2>Create Project</h2>
       <form onSubmit={createProject}>
         <div>
@@ -75,4 +77,3 @@ function CreateProject() {
 }
 
 export default CreateProject;
-

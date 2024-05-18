@@ -1,9 +1,10 @@
-
+// src/components/FundProject/FundProject.js
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
-import { provider, contract } from '../ethers';
+import { provider, contract } from '../../ethers';
+import './FundProject.css';
 
-function FundProject() {
+function FundProject({ onClose }) {
   const [projectId, setProjectId] = useState('');
   const [amount, setAmount] = useState('');
 
@@ -19,6 +20,7 @@ function FundProject() {
       await tx.wait();
 
       alert('Project funded successfully');
+      onClose();
     } catch (error) {
       console.error('Error funding project', error);
       alert('Error funding project');
@@ -26,7 +28,7 @@ function FundProject() {
   };
 
   return (
-    <div className="container">
+    <div className="fund-project">
       <h2>Fund Project</h2>
       <form onSubmit={fundProject}>
         <div>
@@ -45,6 +47,7 @@ function FundProject() {
         </div>
         <button type="submit">Fund Project</button>
       </form>
+      <button onClick={onClose}>Close</button>
     </div>
   );
 }

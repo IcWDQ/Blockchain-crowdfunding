@@ -1,0 +1,14 @@
+/* src/components/Home/Home.css */
+.home-container {
+  position: relative;
+  padding-top: 160px; /* 给导航栏预留空间 */
+  height: 100vh; /* 确保 Home 组件高度占满整个视口 */
+  overflow: hidden; /* 禁用 Home 组件的滚动 */
+}
+
+.content {
+  height: calc(100vh - 160px); /* 减去导航栏的高度和 padding */
+  overflow-y: auto; /* 允许内容区域垂直滚动 */
+}
+
+  
