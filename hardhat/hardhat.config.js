@@ -1,7 +1,6 @@
 require('@nomiclabs/hardhat-ethers');
 require('@nomicfoundation/hardhat-verify');
-
-
+require("@nomiclabs/hardhat-waffle");
 
 
 module.exports = {

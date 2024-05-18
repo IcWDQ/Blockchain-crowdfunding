@@ -36,7 +36,7 @@ struct Project {
     event MilestoneApproved(uint256 projectId, uint256 milestoneId);
     event ProjectCancelled(uint256 projectId);
     event FundsWithdrawn(uint256 projectId, uint256 amount);
-
+event Debug(string message, uint256 value);
     constructor() {
         owner = msg.sender;
     }
@@ -62,6 +62,7 @@ function createProject(uint256 _fundingGoal, uint256[] memory _milestoneGoals, u
     project.creator = payable(msg.sender);
     project.fundingGoal = _fundingGoal;
     project.status = ProjectStatus.Pending;  
+    project.deadline = block.timestamp + _Fundingtimeout; // 设置项目的截止时间
 
     for (uint i = 0; i < _milestoneGoals.length; i++) {
         project.milestones.push(Milestone({
@@ -108,29 +109,31 @@ function fundProject(uint256 _projectId) external payable {
 
 function approveMilestone(uint256 _projectId, uint256 _milestoneId) external onlyOwner {
     Project storage project = projects[_projectId];
-    require(project.status == ProjectStatus.Funded, "Project funding not complete"); 
+    require(project.status == ProjectStatus.Funded, "Project funding not complete");
+
+    // 确保只能按顺序审批里程碑
+    if (_milestoneId > 0) {
+        Milestone storage previousMilestone = project.milestones[_milestoneId - 1];
+        require(previousMilestone.status == MilestoneStatus.Completed, "Previous milestone not completed");
+    }
 
     Milestone storage milestone = project.milestones[_milestoneId];
     require(milestone.status == MilestoneStatus.Pending, "Milestone is not pending");
     require(block.timestamp <= milestone.deadline, "Milestone deadline has passed");
 
-    milestone.status = MilestoneStatus.Approved; // 更新具体里程碑的状态
-    project.milestonePayouts += milestone.goal; // 更新已发放的里程碑资金总额
+    milestone.status = MilestoneStatus.Approved;
     emit MilestoneApproved(_projectId, _milestoneId);
-        
-        // 检查所有里程碑是否都完成，若完成则更新项目状态
-        bool allMilestonesCompleted = true;
-        for (uint i = 0; i < project.milestones.length; i++) {
-            if (project.milestones[i].status != MilestoneStatus.Approved) {
-                allMilestonesCompleted = false;
-                break;
-            }
-        }
-
-        if (allMilestonesCompleted) {
-            project.status = ProjectStatus.Completed;
-        }
 }
+
+
+//访问特定里程碑
+function getMilestone(uint256 _projectId, uint256 _milestoneId) external view returns (uint256, uint256, MilestoneStatus) {
+    Project storage project = projects[_projectId];
+    Milestone storage milestone = project.milestones[_milestoneId];
+    return (milestone.goal, milestone.deadline, milestone.status);
+}
+
+
     
  // 撤销项目
 function cancelProject(uint256 _projectId) external onlyOwner {
@@ -162,40 +165,39 @@ function cancelProject(uint256 _projectId) external onlyOwner {
 
   
   // 发放资金
-function withdrawFunds(uint256 _projectId) external onlyOwner {
+function withdrawFunds(uint256 _projectId, uint256 _milestoneId) external onlyOwner {
     Project storage project = projects[_projectId];
-    require(project.status == ProjectStatus.Funded, "Project funding not complete or project still active");
+    require(project.status == ProjectStatus.Funded || project.status == ProjectStatus.Completed, "Project funding not complete or project still active");
 
-    uint256 amountToWithdraw = 0;
+    Milestone storage milestone = project.milestones[_milestoneId];
+    require(milestone.status == MilestoneStatus.Approved, "Milestone is not approved");
+    
+    uint256 amountToWithdraw = milestone.goal;
+    require(amountToWithdraw > 0, "No funds to withdraw for this milestone");
 
-    // 计算当前可以提取的金额，即所有已批准里程碑的金额
+    milestone.status = MilestoneStatus.Completed; // 设置里程碑为已完成，避免重复提取
+
+    project.milestonePayouts += amountToWithdraw;
+    (bool success, ) = project.creator.call{value: amountToWithdraw}("");
+    require(success, "Transfer failed");
+
+    // 检查是否所有里程碑都已批准并已完成
+    bool allMilestonesCompleted = true;
     for (uint i = 0; i < project.milestones.length; i++) {
-        if (project.milestones[i].status == MilestoneStatus.Approved && project.milestones[i].goal > project.milestonePayouts) {
-            amountToWithdraw += project.milestones[i].goal;
-            project.milestonePayouts += project.milestones[i].goal; // 更新已发放的里程碑金额
-        }
-    }
-
-    require(amountToWithdraw > 0, "No new funds to withdraw");
-
-    project.creator.transfer(amountToWithdraw);
-
-    // 检查是否所有里程碑都已批准
-    bool allMilestonesApproved = true;
-    for (uint i = 0; i < project.milestones.length; i++) {
-        if (project.milestones[i].status != MilestoneStatus.Approved) {
-            allMilestonesApproved = false;
+        if (project.milestones[i].status != MilestoneStatus.Completed) {
+            allMilestonesCompleted = false;
             break;
         }
     }
 
-    // 如果所有里程碑都已批准，将项目状态更新为完成
-    if (allMilestonesApproved) {
+    // 如果所有里程碑都已完成，将项目状态更新为完成
+    if (allMilestonesCompleted) {
         project.status = ProjectStatus.Completed;
     }
 
     emit FundsWithdrawn(_projectId, amountToWithdraw);
 }
+
 
 
 
