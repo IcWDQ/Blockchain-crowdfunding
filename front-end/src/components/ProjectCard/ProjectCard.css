@@ -1,22 +1,28 @@
 .project-card {
-  width: 400px;
-  height: 280px;
+  width: 100%; /* Ensure the card takes full width within the grid item */
+  height: auto; /* Let the height be determined by its content */
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 16px;
-  margin: 10px;
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slightly more noticeable shadow */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s; /* Add transition for hover effect */
+  box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+}
+
+.project-card:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* More noticeable shadow on hover */
 }
 
 @media (prefers-color-scheme: dark) {
   .project-card {
-    background-color: #2e2e2e; /* 深灰色背景 */
-    color: white; /* 白色文字 */
+    background-color: #2e2e2e; /* Dark gray background */
+    color: white; /* White text */
     border: 1px solid #333;
   }
 }
@@ -25,6 +31,10 @@
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 8px;
+  white-space: nowrap; /* Prevents text wrapping */
+  overflow: hidden; /* Hides overflowing text */
+  text-overflow: ellipsis; /* Adds ellipsis to overflowing text */
+  max-width: 100%; /* Ensure it takes full width of the container */
 }
 
 .project-id,
@@ -42,13 +52,15 @@
 
 .project-description {
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* 限制显示三行 */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: normal; /* 确保文本正常换行 */
-  word-break: break-word; /* 确保长单词换行 */
+  white-space: normal;
+  word-break: break-word;
   margin-top: 8px;
+  font-size: 14px;
+  max-height: 3.6em; /* Approximate height for 3 lines of text */
 }
 
 .project-ddl {
@@ -56,8 +68,12 @@
   margin-top: 8px;
 }
 
-.project-ddl.soon {
-  color: red; /* 如果截止日期在6天内显示红色 */
+.project-ddl .deadline-date {
+  font-weight: normal; /* Make deadline date text normal weight */
+}
+
+.project-ddl .deadline-date.soon {
+  color: red; /* Only the date turns red if deadline is soon */
 }
 
 .progress-bar {

@@ -1,11 +1,10 @@
-// src/components/ProjectList/ProjectList.js
 import React from 'react';
 import ProjectCard from '../ProjectCard/ProjectCard';
 import './ProjectList.css';
 
 function ProjectList({ projects, onProjectClick }) {
   if (!projects.length) {
-    return <div className="no-projects">No project yet !</div>;
+    return <div className="no-projects">No project yet!</div>;
   }
 
   // Sort projects in descending order of projectId

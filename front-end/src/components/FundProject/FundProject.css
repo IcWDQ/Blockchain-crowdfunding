@@ -1,23 +1,34 @@
 /* src/components/FundProject/FundProject.css */
-.fund-project {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-  }
-  
-  .fund-project h2 {
-    margin-top: 0;
-  }
-  
-  .fund-project form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
+.fund-project-container {
+  margin-top: 20px;
+}
+
+.input-group {
+  margin-bottom: 10px;
+}
+
+.fund-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.fund-button {
+  background-color: #FFA500;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.fund-button:hover {
+  background-color: #FF8C00;
+}
+
+.error {
+  color: red;
+  margin-top: 5px;
+}

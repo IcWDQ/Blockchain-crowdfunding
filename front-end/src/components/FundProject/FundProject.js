@@ -1,14 +1,19 @@
-
+// src/components/FundProject/FundProject.js
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import { provider, contract } from '../../ethers';
+import './FundProject.css';
 
-function FundProject() {
-  const [projectId, setProjectId] = useState('');
+function FundProject({ projectId }) {
   const [amount, setAmount] = useState('');
+  const [error, setError] = useState('');
 
   const fundProject = async (event) => {
     event.preventDefault();
+    if (parseFloat(amount) <= 0 || isNaN(amount)) {
+      setError('Amount must be a positive number');
+      return;
+    }
 
     try {
       await provider.send("eth_requestAccounts", []);
@@ -19,31 +24,39 @@ function FundProject() {
       await tx.wait();
 
       alert('Project funded successfully');
+      setAmount('');
+      setError('');
     } catch (error) {
       console.error('Error funding project', error);
       alert('Error funding project');
     }
   };
 
+  const handleAmountChange = (e) => {
+    const value = e.target.value;
+    if (!isNaN(value) && parseFloat(value) >= 0) {
+      setAmount(value);
+      setError('');
+    } else {
+      setError('Please enter a valid amount');
+    }
+  };
+
   return (
-    <div className="container">
+    <div className="fund-project-container">
       <h2>Fund Project</h2>
       <form onSubmit={fundProject}>
-        <div>
-          <label>Project ID: </label>
-          <input
-            value={projectId}
-            onChange={e => setProjectId(e.target.value)}
-          />
-        </div>
-        <div>
+        <div className="input-group">
           <label>Amount (in Ether): </label>
           <input
+            type="text"
             value={amount}
-            onChange={e => setAmount(e.target.value)}
+            onChange={handleAmountChange}
+            className="fund-input"
           />
         </div>
-        <button type="submit">Fund Project</button>
+        {error && <p className="error">{error}</p>}
+        <button type="submit" className="fund-button">Fund Project</button>
       </form>
     </div>
   );

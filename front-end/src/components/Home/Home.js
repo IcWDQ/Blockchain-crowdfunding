@@ -1,3 +1,4 @@
+// src/components/Home/Home.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ethers } from 'ethers';
@@ -75,7 +76,10 @@ function Home() {
   };
 
   const handleProjectClick = (project) => {
-    setSelectedProject(project);
+    setSelectedProject({
+      ...project,
+      isCreator: project.creator.toLowerCase() === userAddress.toLowerCase()
+    });
     setActivePage('projectDetails');
   };
 
@@ -91,7 +95,7 @@ function Home() {
     } else if (activePage === 'fundedProjects') {
       projectsToFilter = filterFundedProjects();
     }
-    
+
     if (!term) {
       setFilteredProjects(projectsToFilter);
     } else {

@@ -1,6 +1,8 @@
 // src/components/ProjectDetails/ProjectDetails.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import FundProject from '../FundProject/FundProject';
+import UserUploadProof from '../UserUploadProof/UserUploadProof'; // 修改导入路径
 import './ProjectDetails.css';
 
 function ProjectDetails({ project, onClose }) {
@@ -52,6 +54,13 @@ function ProjectDetails({ project, onClose }) {
         ) : (
           <p>No milestones available</p>
         )}
+
+        {project.isCreator ? (
+          <UserUploadProof projectId={project.projectId} /> // 渲染UserUploadProof组件
+        ) : (
+          <FundProject projectId={project.projectId} projectStatus={project.status} /> // 渲染FundProject组件
+        )}
+
       </div>
     </div>
   );
