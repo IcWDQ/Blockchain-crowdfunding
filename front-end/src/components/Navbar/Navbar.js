@@ -1,39 +1,43 @@
-// src/components/Navbar/Navbar.js
-import React from 'react';
-import { Link } from 'react-router-dom';
-import SearchBox from '../SearchBox/SearchBox';
+import React, { useState } from 'react';
+import MetaMaskInfo from '../MetaMaskInfo/MetaMaskInfo';
+import { FaSearch } from 'react-icons/fa';  // 导入放大镜图标
 import './Navbar.css';
 
-function Navbar({ onShowFundProject, onCreateProject, onShowAllProjects, activePage }) {
+function Navbar({ onCreateProject, onShowAllProjects, onShowMyProjects, onShowFundedProjects, onSearch, activePage }) {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    onSearch(e.target.value);
+  };
+
   return (
-    <div className="navbar-container">
-      <nav className="navbar">
+    <nav className="navbar">
+      <div className="navbar-top">
         <div className="navbar-left">
           <img src="/logo.png" alt="Logo" className="navbar-logo" />
           <span className="navbar-title">InnoFund</span>
         </div>
-        <SearchBox />
-      </nav>
-      <div className="navbar-buttons">
-        <button 
-          onClick={onShowAllProjects} 
-          className="navbar-button" 
-          disabled={activePage === 'allProjects'}
-          style={activePage === 'allProjects' ? { backgroundColor: 'darkblue' } : {}}
-        >
-          All Project
-        </button>
-        <button 
-          onClick={onCreateProject} 
-          className="navbar-button" 
-          disabled={activePage === 'createProject'}
-          style={activePage === 'createProject' ? { backgroundColor: 'darkblue' } : {}}
-        >
-          Create Project
-        </button>
-        <button onClick={onShowFundProject} className="navbar-button">Fund Project</button>
+        <div className="navbar-right">
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <FaSearch className="search-icon" />
+          </div>
+          <MetaMaskInfo />
+        </div>
       </div>
-    </div>
+      <div className="navbar-bottom">
+        <button className={activePage === 'allProjects' ? 'active' : ''} onClick={onShowAllProjects}>All Project</button>
+        <button className={activePage === 'myProjects' ? 'active' : ''} onClick={onShowMyProjects}>My Project</button>
+        <button className={activePage === 'fundedProjects' ? 'active' : ''} onClick={onShowFundedProjects}>Funded Project</button>
+        <button className={activePage === 'createProject' ? 'active' : ''} onClick={onCreateProject}>Create Project</button>
+      </div>
+    </nav>
   );
 }
 

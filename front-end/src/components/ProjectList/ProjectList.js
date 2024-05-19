@@ -4,19 +4,23 @@ import ProjectCard from '../ProjectCard/ProjectCard';
 import './ProjectList.css';
 
 function ProjectList({ projects, onProjectClick }) {
+  if (!projects.length) {
+    return <div className="no-projects">No project yet !</div>;
+  }
+
+  // Sort projects in descending order of projectId
+  const sortedProjects = [...projects].sort((a, b) => b.projectId - a.projectId);
+
   return (
     <div className="project-list">
-      {projects.map((project) => (
+      {sortedProjects.map((project) => (
         <ProjectCard
-          key={project.id}
-          id={project.id}
-          name={project.name}
-          category={project.category}
-          description={project.description}
-          status={project.status}
-          milestones={project.milestones}
-          fundraisingProgress={project.fundraisingProgress}
-          fundraisingGoal={project.fundraisingGoal}
+          key={project.projectId}
+          id={project.projectId}
+          name={project.projectName}
+          category={project.projectType}
+          description={project.projectDescription}
+          projectDDL={project.projectDDL}
           onClick={() => onProjectClick(project)}
         />
       ))}

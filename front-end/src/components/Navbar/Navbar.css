@@ -1,22 +1,20 @@
-/* src/components/Navbar/Navbar.css */
-.navbar-container {
-  background-color: #343a40;
-  color: #fff;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 10;
+.navbar {
   display: flex;
   flex-direction: column;
+  background-color: #343a40;
+  color: white;
+  z-index: 10; /* Ensure it's on top of other elements */
+  position: fixed; /* Fixed position to stay at the top */
+  width: 100%; /* Full width */
+  box-sizing: border-box;
 }
 
-.navbar {
+.navbar-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 100px; /* 调整第一行高度 */
   padding: 10px 20px;
+  box-sizing: border-box;
 }
 
 .navbar-left {
@@ -25,44 +23,73 @@
 }
 
 .navbar-logo {
-  height: 100px; /* 调整logo的高度 */
+  width: 40px;
+  height: 40px;
   margin-right: 10px;
 }
 
 .navbar-title {
   font-size: 24px;
+  font-weight: bold;
 }
 
-.navbar-buttons {
+.navbar-right {
   display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
+  align-items: center;
+  position: relative;
 }
 
-.navbar-button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 15px; /* 调整padding */
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-right input {
+  padding: 10px;
+  padding-right: 30px; /* Ensure space for the icon */
   border: none;
   border-radius: 4px;
-  cursor: pointer;
-  text-decoration: none;
-  text-align: center;
-  flex: 1; /* 确保按钮均匀分布 */
-  margin: 0 5px; /* 确保按钮之间有间距 */
-  white-space: nowrap; /* 防止按钮文本换行 */
-  box-sizing: border-box; /* 确保padding不会影响按钮总高度 */
-}
-
-.navbar-button:disabled {
-  background-color: darkblue;
-  cursor: not-allowed;
-}
-
-.search-box {
-  padding: 10px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 16px;
   width: 200px;
+  margin-right: 20px;
+  box-sizing: border-box;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #ccc;
+}
+
+.navbar-bottom {
+  display: flex;
+  padding: 0; /* Remove padding to avoid gaps */
+  margin-top: 0; /* Remove any margin */
+  box-sizing: border-box;
+}
+
+.navbar-bottom button {
+  position: relative;
+  background-color: #FFA500; 
+  color: white;
+  border: none;
+  padding: 15px;
+  cursor: pointer;
+  flex: 1;
+  box-sizing: border-box;
+  border-bottom: 2px solid transparent;
+  margin: 0;
+}
+
+.navbar-bottom button:hover, 
+.navbar-bottom button:focus {
+  background-color: #FF8C00;
+}
+
+.navbar-bottom button.active {
+  background-color: #FF8C00;
+  border-bottom-color: white;
 }

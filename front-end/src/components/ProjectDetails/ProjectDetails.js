@@ -1,54 +1,58 @@
 // src/components/ProjectDetails/ProjectDetails.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './ProjectDetails.css';
 
 function ProjectDetails({ project, onClose }) {
-  const [amount, setAmount] = useState('');
+  const [milestones, setMilestones] = useState([]);
 
-  const handleInvestment = () => {
-    // Handle investment logic here
-    alert(`Invested ${amount} in project ${project.name}`);
+  useEffect(() => {
+    fetchMilestones(project.projectId);
+  }, [project]);
+
+  const fetchMilestones = async (projectId) => {
+    try {
+      const response = await axios.get('/api/milestones');
+      // 过滤出与当前项目相关的里程碑
+      const projectMilestones = response.data.filter(milestone => milestone.projectId === projectId);
+      setMilestones(projectMilestones);
+    } catch (error) {
+      console.error('Error fetching milestones:', error);
+    }
   };
 
-  if (!project) return null;
-
   return (
-    <div className="project-details">
-      <button className="back-button" onClick={onClose}>Back to Projects</button>
-      <h2>{project.name}</h2>
-      <p>ID: {project.id}</p>
-      <p>{project.description}</p>
-      {project.status === 'milestone' ? (
-        <>
-          <h3>Milestones</h3>
-          {project.milestones.map((milestone, index) => (
-            <div key={index} className="milestone">
-              <p>{milestone.name}</p>
-              <div className="progress-bar">
-                <div className={`progress ${milestone.completed ? 'completed' : milestone.current ? 'current' : ''}`} style={{ width: `${milestone.progress}%` }}></div>
-              </div>
-            </div>
-          ))}
-        </>
-      ) : (
-        <>
-          <h3>Fundraising Progress</h3>
-          <div className="progress-bar">
-            <div className="progress" style={{ width: `${(project.fundraisingProgress / project.fundraisingGoal) * 100}%`, backgroundColor: '#ff69b4' }}></div>
-          </div>
-          <p>{`${project.fundraisingProgress.toLocaleString()} / ${project.fundraisingGoal.toLocaleString()}`}</p>
-          <div className="investment-section">
-            <h3>Invest in this project</h3>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount"
-            />
-            <button onClick={handleInvestment}>Invest</button>
-          </div>
-        </>
-      )}
+    <div className="project-details-container">
+      <div className="project-details">
+        <button onClick={onClose} className="back-button">Back</button>
+        <h2>{project.projectName}</h2>
+        <p><strong>ID:</strong> {project.projectId}</p>
+        <p><strong>Type:</strong> {project.projectType}</p>
+        <p><strong>Description:</strong> {project.projectDescription}</p>
+        <p><strong>Creator:</strong> {project.creator}</p>
+        <p><strong>Funding Goal:</strong> {project.fundingGoal}</p>
+        <p><strong>Amount Raised:</strong> {project.amountRaised}</p>
+        <p><strong>Status:</strong> {project.status}</p>
+        <p><strong>Contributors:</strong> {project.contributors.join(', ')}</p>
+        <p><strong>Created At:</strong> {new Date(project.createdAt).toLocaleString()}</p>
+        <p><strong>Project Deadline:</strong> {new Date(project.projectDDL).toLocaleDateString()}</p>
+
+        <h3>Milestones</h3>
+        {milestones.length > 0 ? (
+          <ul>
+            {milestones.map((milestone) => (
+              <li key={milestone.milestoneId}>
+                <p><strong>Milestone ID:</strong> {milestone.milestoneId}</p>
+                <p><strong>Description:</strong> {milestone.milestoneDescription}</p>
+                <p><strong>Status:</strong> {milestone.milestonestatus}</p>
+                <p><strong>Deadline:</strong> {new Date(milestone.milestoneDDL).toLocaleDateString()}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No milestones available</p>
+        )}
+      </div>
     </div>
   );
 }

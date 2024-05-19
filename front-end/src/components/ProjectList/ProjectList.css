@@ -1,11 +1,16 @@
 /* src/components/ProjectList/ProjectList.css */
 .project-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start; /* 项目卡片靠左排列 */
-    overflow-y: auto; /* 允许垂直滚动 */
-    height: 100%; /* 确保项目列表占满剩余空间 */
-    padding-right: 10px; /* 给滚动条预留空间 */
-    padding-top: 20px; /* 给项目卡片顶部预留空间 */
-  }
-  
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px; /* Ensure there's space between cards */
+}
+
+
+
+.no-projects {
+  text-align: center;
+  color: #999;
+  font-size: 18px;
+  margin-top: 20px;
+}
