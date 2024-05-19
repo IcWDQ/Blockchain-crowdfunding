@@ -61,15 +61,17 @@ function Home() {
   };
 
   const showMyProjects = () => {
+    const myProjects = filterMyProjects();
     setActivePage('myProjects');
     setSelectedProject(null);
-    setFilteredProjects(filterMyProjects());
+    setFilteredProjects(myProjects);
   };
 
   const showFundedProjects = () => {
+    const fundedProjects = filterFundedProjects();
     setActivePage('fundedProjects');
     setSelectedProject(null);
-    setFilteredProjects(filterFundedProjects());
+    setFilteredProjects(fundedProjects);
   };
 
   const handleProjectClick = (project) => {
@@ -79,29 +81,28 @@ function Home() {
 
   const handleBackToProjects = () => {
     setSelectedProject(null);
-    setActivePage('allProjects');
+    setActivePage(activePage === 'createProject' ? 'createProject' : 'allProjects');
   };
 
   const handleSearch = (term) => {
+    let projectsToFilter = projects;
+    if (activePage === 'myProjects') {
+      projectsToFilter = filterMyProjects();
+    } else if (activePage === 'fundedProjects') {
+      projectsToFilter = filterFundedProjects();
+    }
+    
     if (!term) {
-      setFilteredProjects(projects);
+      setFilteredProjects(projectsToFilter);
     } else {
       const lowercasedTerm = term.toLowerCase();
-      const filtered = projects.filter(project =>
+      const filtered = projectsToFilter.filter(project =>
         project.projectName.toLowerCase().includes(lowercasedTerm) ||
         project.projectId.toString() === term // 精确匹配ID
       );
       setFilteredProjects(filtered);
     }
   };
-  
-
-  let displayedProjects = filteredProjects;
-  if (activePage === 'myProjects') {
-    displayedProjects = filterMyProjects();
-  } else if (activePage === 'fundedProjects') {
-    displayedProjects = filterFundedProjects();
-  }
 
   return (
     <div className="home-container">
@@ -119,7 +120,7 @@ function Home() {
         ) : activePage === 'createProject' ? (
           <CreateProject />
         ) : (
-          <ProjectList projects={displayedProjects} onProjectClick={handleProjectClick} />
+          <ProjectList projects={filteredProjects} onProjectClick={handleProjectClick} />
         )}
       </div>
     </div>

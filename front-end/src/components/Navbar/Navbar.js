@@ -19,15 +19,17 @@ function Navbar({ onCreateProject, onShowAllProjects, onShowMyProjects, onShowFu
           <span className="navbar-title">InnoFund</span>
         </div>
         <div className="navbar-right">
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-            <FaSearch className="search-icon" />
-          </div>
+          {activePage !== 'createProject' && (
+            <div className="search-container">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+              <FaSearch className="search-icon" />
+            </div>
+          )}
           <MetaMaskInfo />
         </div>
       </div>
