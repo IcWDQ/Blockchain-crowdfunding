@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Funding Backend</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Project Funding Backend API</h1>
+        <p>This is a simple backend service for managing projects and activities.</p>
+        
+        <h2>Projects</h2>
+        <table id="projects-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Project ID</th>
+                    <th>Project Name</th>
+                    <th>Project Type</th>
+                    <th>Project Description</th>
+                    <th>Creator</th>
+                    <th>Funding Goal</th>
+                    <th>Amount Raised</th>
+                    <th>Status</th>
+                    <th>Contributors</th>
+                    <th>Created At</th>
+                    <th>Project DDL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Projects data will be inserted here -->
+            </tbody>
+        </table>
+        
+        <h2>Activities</h2>
+        <table id="activities-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Type</th>
+                    <th>Project ID</th>
+                    <th>User</th>
+                    <th>Details</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Activities data will be inserted here -->
+            </tbody>
+        </table>
+
+        <h2>Milestones</h2>
+        <table id="milestones-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Project ID</th>
+                    <th>Project Name</th>
+                    <th>Milestone ID</th>
+                    <th>Description</th>
+                    <th>Document</th>
+                    <th>Status</th>
+                    <th>Milestone DDL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Milestones data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+    <script src="/js/script.js"></script>
+</body>
+</html>
