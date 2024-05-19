@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -45,7 +47,7 @@ function checkFileType(file, cb) {
 }
 
 // DB Config
-const db = 'mongodb+srv://nihao1234:nihao1234@cluster0.zfprd6p.mongodb.net/test?retryWrites=true&w=majority';
+const db = process.env.MONGODB_URI || 'mongodb://localhost:27017/mydatabase';
 
 // Connect to MongoDB
 mongoose
@@ -164,12 +166,13 @@ app.post('/api/projects', async (req, res) => {
     res.json(project);
   } catch (err) {
     await session.abortTransaction();
-    console.error('Error saving project:', err);
+    console.error('Error saving project:', err.message, err); // 打印详细错误信息
     res.status(400).json({ error: err.message });
   } finally {
     session.endSession();
   }
 });
+
 
 app.get('/api/projects', (req, res) => {
   Project.find()
@@ -199,32 +202,32 @@ app.post('/api/userApproveMilestones', isProjectCreatorAndFunded, (req, res) => 
   upload(req, res, async (err) => {
     if (err) {
       console.error('Error uploading file:', err);
-      res.status(400).json({ error: err });
-    } else {
-      if (req.file == undefined) {
-        console.error('No file selected');
-        res.status(400).json({ error: 'No file selected' });
-      } else {
-        console.log('File uploaded successfully:', req.file);
-        try {
-          const milestone = await Milestone.findOne({ projectId: req.body.projectId, milestoneId: req.body.milestoneId });
-          if (!milestone) {
-            return res.status(404).json({ error: 'Milestone not found' });
-          }
+      return res.status(400).json({ error: err });
+    } 
 
-          milestone.milestoneDescription = req.body.milestoneDescription;
-          milestone.otherDocuments = `/uploads/${req.file.filename}`;
-          milestone.milestonestatus = 'Pending'; // 确保初始状态设置正确
-          milestone.milestoneDDL = new Date(); // 设置适当的截止日期
+    if (req.file == undefined) {
+      console.error('No file selected');
+      return res.status(400).json({ error: 'No file selected' });
+    } 
 
-          await milestone.save();
-          console.log('Milestone updated successfully:', milestone);
-          res.json(milestone);
-        } catch (err) {
-          console.error('Error updating milestone:', err);
-          res.status(400).json({ error: err.message });
-        }
+    console.log('File uploaded successfully:', req.file);
+    try {
+      const milestone = await Milestone.findOne({ projectId: req.body.projectId, milestoneId: req.body.milestoneId });
+      if (!milestone) {
+        return res.status(404).json({ error: 'Milestone not found' });
       }
+
+      milestone.milestoneDescription = req.body.milestoneDescription;
+      milestone.otherDocuments = `/uploads/${req.file.filename}`;
+      milestone.milestonestatus = 'Pending'; // 确保初始状态设置正确
+      milestone.milestoneDDL = new Date(); // 设置适当的截止日期
+
+      await milestone.save();
+      console.log('Milestone updated successfully:', milestone);
+      res.json(milestone);
+    } catch (err) {
+      console.error('Error updating milestone:', err.message, err);
+      res.status(500).json({ error: err.message });
     }
   });
 });
