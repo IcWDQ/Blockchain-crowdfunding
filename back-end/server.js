@@ -32,7 +32,8 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     checkFileType(file, cb);
   }
-}).single('otherDocument');
+}).single('otherDocument'); // 确保字段名 'otherDocument' 和前端代码一致
+
 
 // Check file type
 function checkFileType(file, cb) {
@@ -232,7 +233,7 @@ app.post('/api/projects/approve', async (req, res) => {
 });
 
 app.post('/api/projects/fund', async (req, res) => {
-  const { projectId, amount } = req.body;
+  const { projectId, amount, contributor } = req.body;
 
   try {
     console.log(`Received funding request for project ${projectId} with amount ${amount}`);
@@ -252,8 +253,12 @@ app.post('/api/projects/fund', async (req, res) => {
     console.log(`Amount in Eth: ${amountInEth}`);
 
     project.amountRaised += amountInEth; // 更新已筹集资金，以 eth 为单位
+    if (!project.contributors.includes(contributor)) {
+      project.contributors.push(contributor);
+    }
 
     console.log(`Updated amountRaised: ${project.amountRaised}`);
+    console.log(`Updated contributors: ${project.contributors}`);
 
     // 检查是否已达到筹资目标，fundingGoal 是 wei 为单位
     const fundingGoalInEth = project.fundingGoal / 10 ** 18;
@@ -366,41 +371,43 @@ app.post('/api/projects/cancel', async (req, res) => {
   }
 });
 
-
-
-
-// Routes for user approve milestones
 app.post('/api/userApproveMilestones', upload, isProjectCreatorAndFunded, async (req, res) => {
   console.log('Request received for userApproveMilestones:', req.body);
-  if (req.file == undefined) {
+  console.log('File info:', req.file);
+  
+  if (!req.file) {
     console.error('No file selected');
-    res.status(400).json({ error: 'No file selected' });
-  } else {
-    console.log('File uploaded successfully:', req.file);
-    try {
-      const projectId = parseInt(req.body.projectId, 10);
-      const milestoneId = parseInt(req.body.milestoneId, 10);
-      
-      if (isNaN(projectId) || isNaN(milestoneId)) {
-        console.error('Invalid project ID or milestone ID:', req.body);
-        return res.status(400).json({ error: 'Invalid project ID or milestone ID' });
-      }
+    return res.status(400).json({ error: 'No file selected' });
+  }
 
-      const milestone = await Milestone.findOne({ projectId, milestoneId });
-      if (!milestone) {
-        return res.status(404).json({ error: 'Milestone not found' });
-      }
+  try {
+    const projectId = parseInt(req.body.projectId, 10);
+    const milestoneId = parseInt(req.body.milestoneId, 10);
 
-      milestone.milestoneDescription = req.body.milestoneDescription;
-      milestone.otherDocuments = `/uploads/${req.file.filename}`;
-      
-      await milestone.save();
-      console.log('Milestone updated successfully:', milestone);
-      res.json(milestone);
-    } catch (err) {
-      console.error('Error updating milestone:', err);
-      res.status(400).json({ error: err.message });
+    console.log(`Parsed projectId: ${projectId}`);
+    console.log(`Parsed milestoneId: ${milestoneId}`);
+    console.log('Request body:', req.body);
+
+    if (isNaN(projectId) || isNaN(milestoneId)) {
+      console.error('Invalid project ID or milestone ID:', req.body);
+      return res.status(400).json({ error: 'Invalid project ID or milestone ID' });
     }
+
+    const milestone = await Milestone.findOne({ projectId, milestoneId });
+    if (!milestone) {
+      console.error(`Milestone not found for projectId: ${projectId}, milestoneId: ${milestoneId}`);
+      return res.status(404).json({ error: 'Milestone not found' });
+    }
+
+    milestone.milestoneDescription = req.body.milestoneDescription;
+    milestone.otherDocuments = `/uploads/${req.file.filename}`;
+    
+    await milestone.save();
+    console.log('Milestone updated successfully:', milestone);
+    res.json(milestone);
+  } catch (err) {
+    console.error('Error updating milestone:', err);
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
   }
 });
 
@@ -450,7 +457,6 @@ app.get('/api/projects/:projectId/milestones/:milestoneId', async (req, res) => 
     res.status(500).json({ error: error.message });
   }
 });
-
 
 app.post('/api/milestones/approve', async (req, res) => {
   const { projectId, milestoneId } = req.body;
@@ -531,3 +537,51 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
+
+// 路由处理创建项目的状态
+app.post('/api/projects/creating-status', async (req, res) => {
+  const { isCreating } = req.body;
+  try {
+    // 在数据库中保存创建项目的状态（此处假设您有适当的存储方式）
+    // 例如，可以在数据库中创建一个专门的集合或字段来存储这个状态
+    // 这里假设使用一个简单的全局变量（实际上应使用数据库）
+    global.isCreatingProject = isCreating;
+    res.status(200).send({ success: true });
+  } catch (error) {
+    res.status(500).send({ success: false, error });
+  }
+});
+
+app.get('/api/projects/creating-status', async (req, res) => {
+  try {
+    // 返回创建项目的状态
+    const isCreating = global.isCreatingProject || false;
+    res.status(200).send({ isCreating });
+  } catch (error) {
+    res.status(500).send({ success: false, error });
+  }
+});
+
+// 路由处理上传里程碑的状态
+app.post('/api/milestones/upload-status', async (req, res) => {
+  const { projectId, isSubmitting } = req.body;
+  try {
+    // 在数据库中保存上传里程碑的状态（此处假设您有适当的存储方式）
+    // 这里假设使用一个简单的全局变量（实际上应使用数据库）
+    global[`isSubmittingMilestone_${projectId}`] = isSubmitting;
+    res.status(200).send({ success: true });
+  } catch (error) {
+    res.status(500).send({ success: false, error });
+  }
+});
+
+app.get('/api/milestones/upload-status/:projectId', async (req, res) => {
+  const { projectId } = req.params;
+  try {
+    // 返回上传里程碑的状态
+    const isSubmitting = global[`isSubmittingMilestone_${projectId}`] || false;
+    res.status(200).send({ isSubmitting });
+  } catch (error) {
+    res.status(500).send({ success: false, error });
+  }
+});

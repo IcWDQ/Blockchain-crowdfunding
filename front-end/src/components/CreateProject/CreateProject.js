@@ -43,12 +43,6 @@ function CreateProject() {
     event.preventDefault();
     setIsCreating(true);
 
-    if (milestoneGoals.length !== milestoneDeadlines.length) {
-      alert('The number of milestone goals and deadlines must be equal.');
-      setIsCreating(false);
-      return;
-    }
-
     try {
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
@@ -143,11 +137,12 @@ function CreateProject() {
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               required
+              disabled={isCreating}
             />
           </div>
           <div>
             <label>Project Type: </label>
-            <select value={projectType} onChange={(e) => setProjectType(e.target.value)} required>
+            <select value={projectType} onChange={(e) => setProjectType(e.target.value)} required disabled={isCreating}>
               <option value="Education">Education</option>
               <option value="Finance">Finance</option>
               <option value="AI">AI</option>
@@ -161,6 +156,7 @@ function CreateProject() {
               value={projectDescription}
               onChange={(e) => setProjectDescription(e.target.value)}
               required
+              disabled={isCreating}
             />
           </div>
           <div>
@@ -170,6 +166,7 @@ function CreateProject() {
               value={fundingGoal}
               onChange={(e) => setFundingGoal(e.target.value)}
               required
+              disabled={isCreating}
             />
           </div>
           <div>
@@ -181,14 +178,15 @@ function CreateProject() {
                 value={goal}
                 onChange={(e) => handleMilestoneGoalChange(index, e.target.value)}
                 required
+                disabled={isCreating}
               />
             ))}
             <div className="button-group">
-              <button type="button" onClick={addMilestone}>Add Milestone</button>
+              <button type="button" onClick={addMilestone} disabled={isCreating}>Add Milestone</button>
               <button
                 type="button"
                 onClick={deleteMilestone}
-                disabled={milestoneGoals.length <= 1}
+                disabled={isCreating || milestoneGoals.length <= 1}
                 className={milestoneGoals.length <= 1 ? 'disabled' : ''}
               >
                 Delete Milestone
@@ -204,6 +202,7 @@ function CreateProject() {
                 value={deadline}
                 onChange={(e) => handleMilestoneDeadlineChange(index, e.target.value)}
                 required
+                disabled={isCreating}
               />
             ))}
           </div>
@@ -216,6 +215,7 @@ function CreateProject() {
                 onChange={(e) => setFundingTimeoutHours(e.target.value)}
                 min="0"
                 required
+                disabled={isCreating}
               />
               <span>Hours</span>
               <input
@@ -225,6 +225,7 @@ function CreateProject() {
                 min="0"
                 max="60"
                 required
+                disabled={isCreating}
               />
               <span>Minutes</span>
             </div>

@@ -57,6 +57,11 @@ function Home() {
     );
   }, [projects]);
 
+  const handleBackToProjects = (page) => {
+    setSelectedProject(null);
+    setActivePage(page);
+  };
+
   useEffect(() => {
     if (activePage === 'allProjects') {
       setFilteredProjects(filterActiveAndFundedProjects());
@@ -95,10 +100,6 @@ function Home() {
     setActivePage('projectDetails');
   };
 
-  const handleBackToProjects = () => {
-    setSelectedProject(null);
-    setActivePage('allProjects');
-  };
 
   const handleSearch = (term) => {
     let projectsToFilter = projects;
@@ -134,7 +135,7 @@ function Home() {
       />
       <div className={`content ${activePage === 'createProject' ? 'centered' : ''}`}>
         {selectedProject ? (
-          <ProjectDetails project={selectedProject} onClose={handleBackToProjects} />
+          <ProjectDetails project={selectedProject} onClose={handleBackToProjects} activePage={activePage} />
         ) : activePage === 'createProject' ? (
           <CreateProject />
         ) : (

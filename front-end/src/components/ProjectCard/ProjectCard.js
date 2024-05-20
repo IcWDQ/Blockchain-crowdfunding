@@ -1,9 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ProjectCard.css';
 
-function ProjectCard({ id, name, category, description, projectDDL, status, fundingGoal, amountRaised, onClick, activePage }) {
+function ProjectCard({ id, name, category, description, projectDDL, status, fundingGoal, amountRaised, onClick, activePage, creator }) {
   const [milestones, setMilestones] = useState([]);
+  const [currentUser, setCurrentUser] = useState('');
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      setCurrentUser(accounts[0]?.toLowerCase() || '');
+    };
+    fetchCurrentUser();
+  }, []);
 
   useEffect(() => {
     if (status.toLowerCase() === 'funded') {
@@ -51,11 +60,12 @@ function ProjectCard({ id, name, category, description, projectDDL, status, fund
 
   const fundingProgress = (parseFloat(amountRaisedInEther) / parseFloat(fundingGoalInEther)) * 100;
 
-  // Determine if the card should be gray
-  const isGray = (activePage === 'myProjects' || activePage === 'fundedProjects') && !(status.toLowerCase() === 'funded' || status.toLowerCase() === 'active');
+  // Determine card color based on project status or creator
+  const isCreator = creator?.toLowerCase() === currentUser; // Check if the current user is the creator
+  const cardColorClass = status.toLowerCase() === 'deleted' ? 'gray' : (isCreator ? 'orange' : '');
 
   return (
-    <div className={`project-card ${isGray ? 'gray' : ''}`} onClick={onClick}>
+    <div className={`project-card ${cardColorClass}`} onClick={onClick}>
       <div className="card-header">
         <h3 className="project-name">{displayedTitle}</h3>
         <p className="project-id"><strong>ID:</strong> {id}</p>

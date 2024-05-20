@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { provider } from '../../ethers'; // Assumes you have a configured ethers provider
+import { provider } from '../../ethers';
 import axios from 'axios';
 import './UserUploadProof.css';
 
@@ -8,6 +8,9 @@ function UserUploadProof({ projectId }) {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [currentUser, setCurrentUser] = useState('');
+  const [milestoneId, setMilestoneId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -17,26 +20,82 @@ function UserUploadProof({ projectId }) {
     fetchCurrentUser();
   }, []);
 
+  useEffect(() => {
+    const fetchPendingMilestoneId = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/api/milestones?projectId=${projectId}&status=pending`);
+        if (response.data.length > 0) {
+          const pendingMilestones = response.data;
+          const minMilestoneId = Math.min(...pendingMilestones.map(m => m.milestoneId));
+          setMilestoneId(minMilestoneId);
+        } else {
+          alert('No pending milestones found for this project.');
+        }
+      } catch (error) {
+        console.error('Error fetching pending milestones:', error);
+      }
+    };
+
+    fetchPendingMilestoneId();
+  }, [projectId]);
+
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-    setFileName(e.target.files[0].name);
+    const selectedFile = e.target.files[0];
+    const allowedExtensions = ['jpeg', 'jpg', 'png', 'gif'];
+    const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+
+    if (!allowedExtensions.includes(fileExtension)) {
+      setError('Only jpeg, jpg, png, gif files are allowed');
+      setFile(null);
+      setFileName('');
+    } else {
+      setError('');
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append('projectId', projectId);
-    formData.append('milestoneDescription', milestoneDescription);
-    formData.append('otherDocument', file);
-    formData.append('currentUser', currentUser);
+    if (!file) {
+      setError('Please select a file.');
+      return;
+    }
+
+    if (milestoneId === null) {
+      setError('No pending milestone ID found.');
+      return;
+    }
 
     try {
-      await axios.post('http://localhost:3001/api/userApproveMilestones', formData);
+      setIsSubmitting(true);
+      await axios.post('/api/milestones/upload-status', { projectId, isSubmitting: true });
+
+      const formData = new FormData();
+      formData.append('projectId', projectId);
+      formData.append('milestoneDescription', milestoneDescription);
+      formData.append('milestoneId', milestoneId);
+      formData.append('otherDocument', file);
+      formData.append('currentUser', currentUser);
+
+      const response = await axios.post('http://localhost:3001/api/userApproveMilestones', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       alert('Milestone proof uploaded successfully');
+      setMilestoneDescription('');
+      setFile(null);
+      setFileName('');
+      setError('');
     } catch (error) {
       console.error('Error uploading milestone proof:', error);
-      alert(`Error: ${error.message}`);
+      setError(`Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+      await axios.post('/api/milestones/upload-status', { projectId, isSubmitting: false });
     }
   };
 
@@ -50,6 +109,7 @@ function UserUploadProof({ projectId }) {
             value={milestoneDescription}
             onChange={(e) => setMilestoneDescription(e.target.value)}
             required
+            disabled={isSubmitting}
           />
         </div>
         <div className="file-input-container">
@@ -61,11 +121,14 @@ function UserUploadProof({ projectId }) {
             id="file-input"
             type="file"
             onChange={handleFileChange}
-            required
+            disabled={isSubmitting}
             className="file-input"
           />
         </div>
-        <button type="submit">Upload</button>
+        {error && <p className="error">{error}</p>}
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Submitting...' : 'Upload'}
+        </button>
       </form>
     </div>
   );

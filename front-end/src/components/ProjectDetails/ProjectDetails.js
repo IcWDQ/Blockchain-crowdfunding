@@ -4,7 +4,7 @@ import FundProject from '../FundProject/FundProject';
 import UserUploadProof from '../UserUploadProof/UserUploadProof';
 import './ProjectDetails.css';
 
-function ProjectDetails({ project, onClose }) {
+function ProjectDetails({ project, onClose, activePage }) {
   const [milestones, setMilestones] = useState([]);
   const [currentUser, setCurrentUser] = useState('');
 
@@ -37,25 +37,41 @@ function ProjectDetails({ project, onClose }) {
   const amountRaisedInEther = parseFloat(project.amountRaised);
   const fundingGoalInEther = project.fundingGoal / 10 ** 18;
 
+  const handleBackClick = () => {
+    onClose(activePage);
+  };
+
+  const calculateFundingProgress = () => {
+    return (amountRaisedInEther / fundingGoalInEther) * 100;
+  };
+
+  const calculateMilestoneProgress = () => {
+    const approvedMilestones = milestones.filter(milestone => milestone.milestonestatus === 'approved').length;
+    return (approvedMilestones / milestones.length) * 100;
+  };
+
   return (
     <div className="project-details-container">
       <div className="project-details">
-        <button onClick={onClose} className="back-button">Back</button>
+        <button onClick={handleBackClick} className="back-button">Back</button>
         <h2>{project.projectName}</h2>
         <p><strong>ID:</strong> {project.projectId}</p>
         <p><strong>Type:</strong> {project.projectType}</p>
         <p><strong>Description:</strong> {project.projectDescription}</p>
         <p><strong>Project Deadline:</strong> {new Date(project.projectDDL).toLocaleDateString()}</p>
 
-        {project.status.toLowerCase() === 'pending' ? (
+        {project.status.toLowerCase() === 'active' ? (
           <div className="status-section">
             <p className="project-status">Crowdfunding Project - Raised: {amountRaisedInEther} / {fundingGoalInEther} ETH</p>
+            <div className="progress-bar">
+              <div className="progress" style={{ width: `${calculateFundingProgress()}%` }}></div>
+            </div>
           </div>
         ) : (
           <div className="milestone-section">
             <h3>Milestones</h3>
             <ul>
-              {milestones.filter(milestone => milestone.milestonestatus === 'approved').map((milestone, index) => (
+              {milestones.map((milestone, index) => (
                 <li key={`${project.projectId}-${milestone.milestoneId}-${index}`}>
                   <p><strong>Milestone ID:</strong> {milestone.milestoneId + 1}</p>
                   <p><strong>Description:</strong> {milestone.milestoneDescription}</p>
@@ -76,6 +92,7 @@ function ProjectDetails({ project, onClose }) {
                 );
               })}
             </div>
+            <p className="project-status">Milestone Progress - {milestones.filter(m => m.milestonestatus === 'approved').length} of {milestones.length} approved</p>
           </div>
         )}
 

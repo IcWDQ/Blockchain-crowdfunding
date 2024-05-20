@@ -2,7 +2,7 @@ import React from 'react';
 import ProjectCard from '../ProjectCard/ProjectCard';
 import './ProjectList.css';
 
-function ProjectList({ projects, onProjectClick, activePage }) {
+function ProjectList({ projects, onProjectClick, activePage, currentUser }) {
   if (!projects.length) {
     return <div className="no-projects">No project yet!</div>;
   }
@@ -11,7 +11,7 @@ function ProjectList({ projects, onProjectClick, activePage }) {
 
   return (
     <div className="project-list">
-      {sortedProjects.map((project) => (
+      {projects.map((project) => (
         <ProjectCard
           key={project.projectId}
           id={project.projectId}
@@ -23,7 +23,8 @@ function ProjectList({ projects, onProjectClick, activePage }) {
           fundingGoal={project.fundingGoal}
           amountRaised={project.amountRaised}
           onClick={() => onProjectClick(project)}
-          activePage={activePage} // 传递 activePage 属性
+          activePage={activePage}
+          creator={project.creator} // 传递 creator 属性
         />
       ))}
     </div>

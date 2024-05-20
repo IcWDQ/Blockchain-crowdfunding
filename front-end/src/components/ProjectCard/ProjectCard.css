@@ -19,8 +19,12 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
+.project-card.orange {
+  background-color: #faeed5; /* Light orange */
+}
+
 .project-card.gray {
-  filter: grayscale(100%);
+  background-color: #adacac; /* Gray for deleted projects */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,6 +32,11 @@
     background-color: #2e2e2e;
     color: white;
     border: 1px solid #333;
+  }
+
+  .project-card.orange {
+    background-color: #e0975c76; /* Deep orange for night mode */
+    color: white;
   }
 }
 
