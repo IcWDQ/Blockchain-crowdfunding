@@ -1,6 +1,6 @@
 // src/components/UserUploadProof/UserUploadProof.js
 import React, { useState, useEffect } from 'react';
-import { provider, ethers } from '../../ethers';
+import { provider } from '../../ethers'; // Assumes you have a configured ethers provider
 import axios from 'axios';
 import './UserUploadProof.css';
 

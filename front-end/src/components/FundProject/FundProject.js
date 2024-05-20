@@ -1,16 +1,25 @@
+// src/components/FundProject/FundProject.js
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
-import { provider, contract } from '../ethers';
+import { provider, contract } from '../../ethers';
 import axios from 'axios';
+import './FundProject.css';
 
-function FundProject() {
-  const [projectId, setProjectId] = useState('');
+function FundProject({ projectId }) {
   const [amount, setAmount] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fundProject = async (event) => {
     event.preventDefault();
 
+    if (parseFloat(amount) <= 0 || isNaN(amount)) {
+      setError('Amount must be a positive number');
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
       await provider.send("eth_requestAccounts", []);
 
       const amountInWei = ethers.utils.parseEther(amount);
@@ -20,7 +29,7 @@ function FundProject() {
 
       // 更新后端数据库
       try {
-        const response = await axios.post('http://localhost:5000/api/projects/fund', {
+        const response = await axios.post('http://localhost:3001/api/projects/fund', {
           projectId: parseInt(projectId, 10),
           amount: parseFloat(amount) // 以数值形式发送，以 eth 为单位
         });
@@ -34,31 +43,45 @@ function FundProject() {
         console.error('Error updating database', error);
         alert('Error updating database');
       }
+      
+      setAmount('');
+      setError('');
     } catch (error) {
       console.error('Error funding project', error);
-      alert('Error funding project');
+      setError('Error funding project');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAmountChange = (e) => {
+    const value = e.target.value;
+    if (value === '' || (!isNaN(value) && parseFloat(value) >= 0)) {
+      setAmount(value);
+      setError('');
+    } else {
+      setError('Please enter a valid amount');
     }
   };
 
   return (
-    <div className="container">
+    <div className="fund-project-container">
       <h2>Fund Project</h2>
       <form onSubmit={fundProject}>
-        <div>
-          <label>Project ID: </label>
-          <input
-            value={projectId}
-            onChange={e => setProjectId(e.target.value)}
-          />
-        </div>
-        <div>
+        <div className="input-group">
           <label>Amount (in Ether): </label>
           <input
+            type="text"
             value={amount}
-            onChange={e => setAmount(e.target.value)}
+            onChange={handleAmountChange}
+            className="fund-input"
+            disabled={isSubmitting} // 在提交期间禁用输入框
           />
         </div>
-        <button type="submit">Fund Project</button>
+        {error && <p className="error">{error}</p>}
+        <button type="submit" className="fund-button" disabled={isSubmitting}>
+          {isSubmitting ? 'Submitting...' : 'Fund Project'}
+        </button>
       </form>
     </div>
   );
