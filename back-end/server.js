@@ -1,14 +1,13 @@
-require('dotenv').config();
-
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
+const cron = require('node-cron');
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 5000;
 
 // Enable CORS
 app.use(cors());
@@ -47,7 +46,7 @@ function checkFileType(file, cb) {
 }
 
 // DB Config
-const db = process.env.MONGODB_URI || 'mongodb://localhost:27017/mydatabase';
+const db = 'mongodb+srv://nihao1234:nihao1234@cluster0.zfprd6p.mongodb.net/test?retryWrites=true&w=majority';
 
 // Connect to MongoDB
 mongoose
@@ -90,7 +89,7 @@ const milestoneSchema = new mongoose.Schema({
   projectName: { type: String, required: true },
   milestoneId: { type: Number, required: true },
   milestoneDescription: { type: String },
-  otherDocuments: { type: String }, // 存储图片的路径
+  otherDocuments: { type: String },
   milestonestatus: { type: String },
   milestoneDDL: { type: Date }
 });
@@ -102,22 +101,32 @@ const Milestone = mongoose.model('Milestone', milestoneSchema);
 // Middleware to check project creator and project status
 const isProjectCreatorAndFunded = async (req, res, next) => {
   try {
-    console.log('Received request:', req.body); // 打印接收到的请求数据
-    const projectId = parseInt(req.body.projectId, 10); // 确保 projectId 是整数
-    console.log('Parsed projectId:', projectId); // 打印解析后的 projectId
-    if (isNaN(projectId)) {
-      console.error('Invalid project ID:', req.body.projectId);
-      return res.status(400).json({ error: 'Invalid project ID' });
+    console.log('Received request:', req.body);
+    const { projectId, milestoneId, currentUser } = req.body;
+    console.log('Parsed projectId:', projectId);
+    console.log('Parsed milestoneId:', milestoneId);
+
+    if (isNaN(parseInt(projectId, 10)) || isNaN(parseInt(milestoneId, 10))) {
+      console.error('Invalid project ID or milestone ID:', req.body);
+      return res.status(400).json({ error: 'Invalid project ID or milestone ID' });
     }
 
     const project = await Project.findOne({ projectId });
-    console.log('Fetched project:', project); // 打印查询到的项目
+    console.log('Fetched project:', project);
     if (!project) {
       console.error('Project not found:', projectId);
       return res.status(404).json({ error: 'Project not found' });
     }
-    if (project.creator.toLowerCase() !== req.body.currentUser.toLowerCase()) {
-      console.error('Only the project creator can approve milestones:', req.body.currentUser);
+
+    const milestone = await Milestone.findOne({ projectId, milestoneId });
+    console.log('Fetched milestone:', milestone);
+    if (!milestone) {
+      console.error('Milestone not found:', { projectId, milestoneId });
+      return res.status(404).json({ error: 'Milestone not found' });
+    }
+
+    if (project.creator.toLowerCase() !== currentUser.toLowerCase()) {
+      console.error('Only the project creator can approve milestones:', currentUser);
       return res.status(403).json({ error: 'Only the project creator can approve milestones' });
     }
     if (project.status !== 'Funded') {
@@ -142,11 +151,11 @@ const Activity = mongoose.model('activities', new mongoose.Schema({
 
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static('uploads')); // 使 uploads 文件夹中的文件可访问
+app.use('/uploads', express.static('uploads'));
 
 // Routes for projects
 app.post('/api/projects', async (req, res) => {
-  console.log('Received project creation request:', req.body); // 打印接收到的请求数据
+  console.log('Received project creation request:', req.body);
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -158,21 +167,21 @@ app.post('/api/projects', async (req, res) => {
       ...ms,
       milestoneDescription: '',
       milestonestatus: 'Pending',
-      milestoneDDL: new Date()
+      milestoneDDL: new Date(ms.milestoneDDL) // 确保 milestoneDDL 是 Date 对象
     }));
+
     await Milestone.insertMany(milestones, { session });
 
     await session.commitTransaction();
     res.json(project);
   } catch (err) {
     await session.abortTransaction();
-    console.error('Error saving project:', err.message, err); // 打印详细错误信息
+    console.error('Error saving project:', err);
     res.status(400).json({ error: err.message });
   } finally {
     session.endSession();
   }
 });
-
 
 app.get('/api/projects', (req, res) => {
   Project.find()
@@ -185,9 +194,9 @@ app.get('/api/projects', (req, res) => {
 
 app.get('/api/projects/:id', (req, res) => {
   Project.findOne({ projectId: req.params.id })
-    .populate('milestones') // Populate milestones
+    .populate('milestones')
     .then(project => {
-      console.log('Fetched project:', project); // 打印查询到的项目
+      console.log('Fetched project:', project);
       res.json(project);
     })
     .catch(err => {
@@ -196,40 +205,186 @@ app.get('/api/projects/:id', (req, res) => {
     });
 });
 
+app.post('/api/projects/approve', async (req, res) => {
+  const { projectId } = req.body;
+
+  try {
+    const project = await Project.findOne({ projectId });
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    if (project.status !== 'Pending') {
+      return res.status(400).json({ error: 'Project is not in pending status' });
+    }
+
+    project.status = 'Active'; // 更新项目状态为 "Active"
+    await project.save();
+
+    res.json({ success: true, message: 'Project status updated to Active' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.post('/api/projects/fund', async (req, res) => {
+  const { projectId, amount } = req.body;
+
+  try {
+    const project = await Project.findOne({ projectId });
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    const amountInWei = ethers.utils.parseEther(amount.toString());
+    project.amountRaised += amount; // 更新已筹集资金，以 eth 为单位
+
+    // 检查是否已达到筹资目标
+    const amountRaisedInWei = ethers.utils.parseEther(project.amountRaised.toString());
+    if (amountRaisedInWei.gte(ethers.BigNumber.from(project.fundingGoal))) {
+      project.status = 'Funded';
+    }
+
+    await project.save();
+
+    res.json(project);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/projects/refund', async (req, res) => {
+  const { projectId } = req.body;
+
+  try {
+    const project = await Project.findOne({ projectId });
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    project.status = 'Refunded'; // 设置项目状态为 Refunded 或者其他合适的状态
+    await project.save();
+
+    res.json(project);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/projects/withdrawFunds', async (req, res) => {
+  const { projectId, milestoneId } = req.body;
+
+  try {
+    const project = await Project.findOne({ projectId });
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    const milestone = await Milestone.findOne({ projectId, milestoneId });
+    if (!milestone) {
+      return res.status(404).json({ error: 'Milestone not found' });
+    }
+
+    milestone.milestonestatus = 'Completed';
+    await milestone.save();
+
+    project.amountRaised -= milestone.goal; // 减去里程碑的资金量
+
+    // Check if all milestones are completed
+    const allMilestonesCompleted = await Milestone.find({ projectId, milestonestatus: { $ne: 'Completed' } }).countDocuments() === 0;
+
+    if (allMilestonesCompleted) {
+      project.status = 'Completed';
+    }
+
+    await project.save();
+
+    res.json({ updated: allMilestonesCompleted });
+  } catch (error) {
+    console.error('Error updating project:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/projects/cancel', async (req, res) => {
+  const { projectId } = req.body;
+
+  try {
+    const project = await Project.findOne({ projectId });
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // 检查项目是否处于可以取消的状态
+    if (project.status !== 'Active' && project.status !== 'Funded') {
+      return res.status(400).json({ error: 'Project cannot be cancelled in its current state' });
+    }
+
+    // 更新项目状态为 'Cancelled'
+    project.status = 'Cancelled';
+    await project.save();
+
+    // 更新所有相关的里程碑状态为 'Completed'
+    await Milestone.updateMany(
+      { projectId: projectId },
+      { $set: { milestonestatus: 'Completed' } }
+    );
+
+    // 退还每个捐款者的资金
+    const remainingFunds = project.amountRaised;
+    for (const [contributor, contribution] of project.contributions) {
+      if (contribution > 0) {
+        // 退还每个捐款者的资金
+        await provider.sendTransaction({
+          to: contributor,
+          value: ethers.utils.parseEther(contribution.toString())
+        });
+      }
+    }
+
+    res.json({ success: true, message: 'Project cancelled and funds refunded' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+
 // Routes for user approve milestones
-app.post('/api/userApproveMilestones', isProjectCreatorAndFunded, (req, res) => {
+app.post('/api/userApproveMilestones', upload, isProjectCreatorAndFunded, async (req, res) => {
   console.log('Request received for userApproveMilestones:', req.body);
-  upload(req, res, async (err) => {
-    if (err) {
-      console.error('Error uploading file:', err);
-      return res.status(400).json({ error: err });
-    } 
-
-    if (req.file == undefined) {
-      console.error('No file selected');
-      return res.status(400).json({ error: 'No file selected' });
-    } 
-
+  if (req.file == undefined) {
+    console.error('No file selected');
+    res.status(400).json({ error: 'No file selected' });
+  } else {
     console.log('File uploaded successfully:', req.file);
     try {
-      const milestone = await Milestone.findOne({ projectId: req.body.projectId, milestoneId: req.body.milestoneId });
+      const projectId = parseInt(req.body.projectId, 10);
+      const milestoneId = parseInt(req.body.milestoneId, 10);
+      
+      if (isNaN(projectId) || isNaN(milestoneId)) {
+        console.error('Invalid project ID or milestone ID:', req.body);
+        return res.status(400).json({ error: 'Invalid project ID or milestone ID' });
+      }
+
+      const milestone = await Milestone.findOne({ projectId, milestoneId });
       if (!milestone) {
         return res.status(404).json({ error: 'Milestone not found' });
       }
 
       milestone.milestoneDescription = req.body.milestoneDescription;
       milestone.otherDocuments = `/uploads/${req.file.filename}`;
-      milestone.milestonestatus = 'Pending'; // 确保初始状态设置正确
-      milestone.milestoneDDL = new Date(); // 设置适当的截止日期
-
+      
       await milestone.save();
       console.log('Milestone updated successfully:', milestone);
       res.json(milestone);
     } catch (err) {
-      console.error('Error updating milestone:', err.message, err);
-      res.status(500).json({ error: err.message });
+      console.error('Error updating milestone:', err);
+      res.status(400).json({ error: err.message });
     }
-  });
+  }
 });
 
 // Routes for activities
@@ -252,7 +407,6 @@ app.get('/api/activities', (req, res) => {
     });
 });
 
-// 获取所有状态为Pending的里程碑
 app.get('/api/milestones/pending', (req, res) => {
   Milestone.find({ milestonestatus: 'Pending' })
     .then(milestones => res.json(milestones))
@@ -265,7 +419,6 @@ app.get('/api/milestones', (req, res) => {
     .catch(err => res.status(400).json({ error: err.message }));
 });
 
-// 管理员审批里程碑
 app.post('/api/milestones/approve', async (req, res) => {
   const { projectId, milestoneId } = req.body;
 
@@ -284,7 +437,61 @@ app.post('/api/milestones/approve', async (req, res) => {
   }
 });
 
-// Root route
+// 定义定时任务，每分钟检查一次
+cron.schedule('* * * * *', async () => {
+  console.log('Running a task every minute to check for project DDLs');
+  try {
+    const now = new Date();
+    const projectsToCancel = await Project.find({
+      projectDDL: { $lt: now },
+      status: { $ne: 'Funded' }
+    });
+
+    for (const project of projectsToCancel) {
+      project.status = 'Cancelled';
+
+      // 更新所有相关的里程碑状态为 'Completed'
+      await Milestone.updateMany(
+        { projectId: project.projectId },
+        { $set: { milestonestatus: 'Completed' } }
+      );
+
+      // 退还每个捐款者的资金
+      const remainingFunds = project.amountRaised;
+      for (const contributor of project.contributors) {
+        const contribution = project.contributions.get(contributor); // 使用 Map 的 get 方法
+        if (contribution > 0) {
+          // 使用以太坊网络退还每个捐款者的资金
+          await provider.sendTransaction({
+            to: contributor,
+            value: ethers.utils.parseEther(contribution.toString())
+          });
+        }
+      }
+
+      await project.save();
+      console.log(`Project ${project.projectId} has been cancelled and funds refunded`);
+    }
+
+    // 查找所有状态为 'Cancelled' 的项目
+    const cancelledProjects = await Project.find({
+      status: 'Cancelled'
+    });
+
+    for (const project of cancelledProjects) {
+      // 更新所有相关的里程碑状态为 'Completed'
+      await Milestone.updateMany(
+        { projectId: project.projectId },
+        { $set: { milestonestatus: 'Completed' } }
+      );
+    }
+
+  } catch (error) {
+    console.error('Error in scheduled task', error);
+  }
+});
+
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
