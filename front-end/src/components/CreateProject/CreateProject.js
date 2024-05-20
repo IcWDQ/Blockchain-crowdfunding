@@ -1,3 +1,4 @@
+// src/components/CreateProject/CreateProject.js
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import { provider, contract } from '../../ethers';
@@ -11,7 +12,8 @@ function CreateProject() {
   const [fundingGoal, setFundingGoal] = useState('');
   const [milestoneGoals, setMilestoneGoals] = useState(['']);
   const [milestoneDeadlines, setMilestoneDeadlines] = useState(['']);
-  const [fundingTimeout, setFundingTimeout] = useState('');
+  const [fundingTimeoutHours, setFundingTimeoutHours] = useState('0');
+  const [fundingTimeoutMinutes, setFundingTimeoutMinutes] = useState('0');
   const [isCreating, setIsCreating] = useState(false);
 
   const handleMilestoneGoalChange = (index, value) => {
@@ -55,11 +57,13 @@ function CreateProject() {
       const milestoneGoalsInWei = milestoneGoals.map(goal => ethers.utils.parseEther(goal));
       const milestoneDeadlinesInSeconds = milestoneDeadlines.map(deadline => parseInt(deadline, 10) * 86400);
 
+      const fundingTimeoutInSeconds = parseInt(fundingTimeoutHours, 10) * 3600 + parseInt(fundingTimeoutMinutes, 10) * 60;
+
       const tx = await contract.connect(signer).createProject(
         fundingGoalInWei,
         milestoneGoalsInWei,
         milestoneDeadlinesInSeconds,
-        parseInt(fundingTimeout, 10)
+        fundingTimeoutInSeconds
       );
 
       const receipt = await tx.wait();
@@ -71,7 +75,7 @@ function CreateProject() {
 
       const projectId = event.args.projectId;
 
-      const projectDeadline = new Date(Date.now() + parseInt(fundingTimeout, 10) * 1000);
+      const projectDeadline = new Date(Date.now() + fundingTimeoutInSeconds * 1000);
 
       const milestones = milestoneDeadlines.map((days, index) => ({
         projectId: projectId.toNumber(),
@@ -123,7 +127,8 @@ function CreateProject() {
     setFundingGoal('');
     setMilestoneGoals(['']);
     setMilestoneDeadlines(['']);
-    setFundingTimeout('');
+    setFundingTimeoutHours('0');
+    setFundingTimeoutMinutes('0');
   };
 
   return (
@@ -203,13 +208,26 @@ function CreateProject() {
             ))}
           </div>
           <div>
-            <label>Funding Timeout (in seconds): </label>
-            <input
-              type="text"
-              value={fundingTimeout}
-              onChange={(e) => setFundingTimeout(e.target.value)}
-              required
-            />
+            <label>Funding Timeout: </label>
+            <div className="timeout-inputs">
+              <input
+                type="number"
+                value={fundingTimeoutHours}
+                onChange={(e) => setFundingTimeoutHours(e.target.value)}
+                min="0"
+                required
+              />
+              <span>Hours</span>
+              <input
+                type="number"
+                value={fundingTimeoutMinutes}
+                onChange={(e) => setFundingTimeoutMinutes(e.target.value)}
+                min="0"
+                max="60"
+                required
+              />
+              <span>Minutes</span>
+            </div>
           </div>
           <button type="submit" disabled={isCreating}>
             {isCreating ? 'Creating...' : 'Create Project'}

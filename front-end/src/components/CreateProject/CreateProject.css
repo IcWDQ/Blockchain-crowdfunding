@@ -1,3 +1,4 @@
+/* src/components/CreateProject/CreateProject.css */
 .create-project-container {
   display: flex;
   justify-content: center;
@@ -89,14 +90,14 @@ button {
   padding: 10px 20px;
   font-size: 16px;
   color: #fff;
-  background-color: #FFA500; /* 橙色背景 */
+  background-color: #FFA500;
   border: none;
   cursor: pointer;
   text-align: center;
 }
 
 button:hover {
-  background-color: #FF8C00; /* 深橙色背景 */
+  background-color: #FF8C00;
 }
 
 button:disabled {
@@ -115,4 +116,18 @@ button[type="button"]:hover {
 button[type="button"].disabled {
   opacity: 0.5; /* 禁用时提高透明度 */
   cursor: not-allowed;
+}
+
+.timeout-inputs {
+  display: flex;
+  align-items: center;
+}
+
+.timeout-inputs input {
+  width: auto;
+  flex: 1;
+}
+
+.timeout-inputs span {
+  margin: 0 10px;
 }

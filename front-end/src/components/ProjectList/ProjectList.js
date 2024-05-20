@@ -1,3 +1,4 @@
+// src/components/ProjectList/ProjectList.js
 import React from 'react';
 import ProjectCard from '../ProjectCard/ProjectCard';
 import './ProjectList.css';
@@ -7,7 +8,6 @@ function ProjectList({ projects, onProjectClick }) {
     return <div className="no-projects">No project yet!</div>;
   }
 
-  // Sort projects in descending order of projectId
   const sortedProjects = [...projects].sort((a, b) => b.projectId - a.projectId);
 
   return (
@@ -20,6 +20,9 @@ function ProjectList({ projects, onProjectClick }) {
           category={project.projectType}
           description={project.projectDescription}
           projectDDL={project.projectDDL}
+          status={project.status}
+          fundingGoal={project.fundingGoal} // Ensure this is being passed
+          amountRaised={project.amountRaised} // Ensure this is being passed
           onClick={() => onProjectClick(project)}
         />
       ))}

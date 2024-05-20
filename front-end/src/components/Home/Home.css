@@ -11,6 +11,8 @@
   overflow-y: auto;
   padding: 20px;
   margin-top: 150px; /* Adjust if necessary to avoid overlapping with the navbar */
+  position: relative; /* Ensure ProjectDetails doesn't cover the entire screen */
+  z-index: 0; /* Make sure it doesn't block the navbar */
 }
 
 .content.centered {

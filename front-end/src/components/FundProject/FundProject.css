@@ -3,32 +3,52 @@
   margin-top: 20px;
 }
 
-.input-group {
-  margin-bottom: 10px;
+.fund-project-container h2 {
+  margin-bottom: 16px;
 }
 
-.fund-input {
+.fund-project-container .input-group {
+  margin-bottom: 16px;
+}
+
+.fund-project-container label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.fund-project-container input {
   width: 100%;
   padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ddd;
+  border: 1px solid #ced4da;
   border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 16px;
 }
 
-.fund-button {
-  background-color: #FFA500;
+.fund-project-container button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
   color: #fff;
+  background-color: #28a745;
   border: none;
-  padding: 10px 15px;
-  border-radius: 0;
+  border-radius: 4px;
   cursor: pointer;
+  margin-top: 10px;
 }
 
-.fund-button:hover {
-  background-color: #FF8C00;
+.fund-project-container button:hover {
+  background-color: #218838;
 }
 
-.error {
+.fund-project-container button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.fund-project-container .error {
   color: red;
-  margin-top: 5px;
+  font-size: 14px;
+  margin-top: 8px;
 }

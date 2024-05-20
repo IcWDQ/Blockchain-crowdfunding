@@ -1,3 +1,4 @@
+// src/components/Navbar/Navbar.js
 import React, { useState } from 'react';
 import MetaMaskInfo from '../MetaMaskInfo/MetaMaskInfo';
 import { FaSearch } from 'react-icons/fa';  // 导入放大镜图标
@@ -34,9 +35,9 @@ function Navbar({ onCreateProject, onShowAllProjects, onShowMyProjects, onShowFu
         </div>
       </div>
       <div className="navbar-bottom">
-        <button className={activePage === 'allProjects' ? 'active' : ''} onClick={onShowAllProjects}>All Project</button>
-        <button className={activePage === 'myProjects' ? 'active' : ''} onClick={onShowMyProjects}>My Project</button>
-        <button className={activePage === 'fundedProjects' ? 'active' : ''} onClick={onShowFundedProjects}>Funded Project</button>
+        <button className={activePage === 'allProjects' ? 'active' : ''} onClick={onShowAllProjects}>All Projects</button>
+        <button className={activePage === 'myProjects' ? 'active' : ''} onClick={onShowMyProjects}>My Projects</button>
+        <button className={activePage === 'fundedProjects' ? 'active' : ''} onClick={onShowFundedProjects}>Funded Projects</button>
         <button className={activePage === 'createProject' ? 'active' : ''} onClick={onCreateProject}>Create Project</button>
       </div>
     </nav>

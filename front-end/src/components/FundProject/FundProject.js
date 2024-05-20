@@ -7,15 +7,18 @@ import './FundProject.css';
 function FundProject({ projectId }) {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fundProject = async (event) => {
     event.preventDefault();
+
     if (parseFloat(amount) <= 0 || isNaN(amount)) {
       setError('Amount must be a positive number');
       return;
     }
 
     try {
+      setIsSubmitting(true);
       await provider.send("eth_requestAccounts", []);
 
       const amountInWei = ethers.utils.parseEther(amount);
@@ -28,13 +31,15 @@ function FundProject({ projectId }) {
       setError('');
     } catch (error) {
       console.error('Error funding project', error);
-      alert('Error funding project');
+      setError('Error funding project');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
-    if (!isNaN(value) && parseFloat(value) >= 0) {
+    if (value === '' || (!isNaN(value) && parseFloat(value) >= 0)) {
       setAmount(value);
       setError('');
     } else {
@@ -53,10 +58,13 @@ function FundProject({ projectId }) {
             value={amount}
             onChange={handleAmountChange}
             className="fund-input"
+            disabled={isSubmitting} // 在提交期间禁用输入框
           />
         </div>
         {error && <p className="error">{error}</p>}
-        <button type="submit" className="fund-button">Fund Project</button>
+        <button type="submit" className="fund-button" disabled={isSubmitting}>
+          {isSubmitting ? 'Submitting...' : 'Fund Project'}
+        </button>
       </form>
     </div>
   );

@@ -1,27 +1,43 @@
 // src/components/ProjectDetails/ProjectDetails.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { ethers } from 'ethers';
 import FundProject from '../FundProject/FundProject';
-import UserUploadProof from '../UserUploadProof/UserUploadProof'; // 修改导入路径
+import UserUploadProof from '../UserUploadProof/UserUploadProof';
 import './ProjectDetails.css';
 
 function ProjectDetails({ project, onClose }) {
   const [milestones, setMilestones] = useState([]);
 
   useEffect(() => {
-    fetchMilestones(project.projectId);
+    if (project.status === 'funded') {
+      fetchMilestones(project.projectId);
+    }
   }, [project]);
 
   const fetchMilestones = async (projectId) => {
     try {
       const response = await axios.get('/api/milestones');
-      // 过滤出与当前项目相关的里程碑
       const projectMilestones = response.data.filter(milestone => milestone.projectId === projectId);
       setMilestones(projectMilestones);
     } catch (error) {
       console.error('Error fetching milestones:', error);
     }
   };
+
+  const activeMilestone = milestones.find(milestone => milestone.milestonestatus === 'pending');
+  const completedMilestones = milestones.filter(milestone => milestone.milestonestatus === 'completed');
+
+  let amountRaised, fundingGoal;
+
+  try {
+    amountRaised = ethers.BigNumber.from(project.amountRaised.toString());
+    fundingGoal = ethers.BigNumber.from(project.fundingGoal.toString());
+  } catch (error) {
+    console.error('Invalid BigNumber value:', error);
+    amountRaised = ethers.BigNumber.from(0);
+    fundingGoal = ethers.BigNumber.from(1); // 设置一个默认值，防止除以零错误
+  }
 
   return (
     <div className="project-details-container">
@@ -31,36 +47,47 @@ function ProjectDetails({ project, onClose }) {
         <p><strong>ID:</strong> {project.projectId}</p>
         <p><strong>Type:</strong> {project.projectType}</p>
         <p><strong>Description:</strong> {project.projectDescription}</p>
-        <p><strong>Creator:</strong> {project.creator}</p>
-        <p><strong>Funding Goal:</strong> {project.fundingGoal}</p>
-        <p><strong>Amount Raised:</strong> {project.amountRaised}</p>
-        <p><strong>Status:</strong> {project.status}</p>
-        <p><strong>Contributors:</strong> {project.contributors.join(', ')}</p>
-        <p><strong>Created At:</strong> {new Date(project.createdAt).toLocaleString()}</p>
         <p><strong>Project Deadline:</strong> {new Date(project.projectDDL).toLocaleDateString()}</p>
 
-        <h3>Milestones</h3>
-        {milestones.length > 0 ? (
-          <ul>
-            {milestones.map((milestone) => (
-              <li key={milestone.milestoneId}>
-                <p><strong>Milestone ID:</strong> {milestone.milestoneId}</p>
-                <p><strong>Description:</strong> {milestone.milestoneDescription}</p>
-                <p><strong>Status:</strong> {milestone.milestonestatus}</p>
-                <p><strong>Deadline:</strong> {new Date(milestone.milestoneDDL).toLocaleDateString()}</p>
-              </li>
-            ))}
-          </ul>
+        {project.status.toLowerCase() === 'active' ? (
+          <div className="status-section">
+            <p className="project-status">Crowdfunding Project - Raised: {ethers.utils.formatEther(amountRaised)} / {ethers.utils.formatEther(fundingGoal)} ETH</p>
+            <div className="progress-bar">
+              <div className="progress" style={{ width: `${amountRaised.mul(100).div(fundingGoal)}%` }}></div>
+            </div>
+            {!project.isCreator && <FundProject projectId={project.projectId} />}
+          </div>
         ) : (
-          <p>No milestones available</p>
+          <div className="milestone-section">
+            <h3>Milestones</h3>
+            <ul>
+              {completedMilestones.map((milestone) => (
+                <li key={milestone.milestoneId}>
+                  <p><strong>Milestone ID:</strong> {milestone.milestoneId}</p>
+                  <p><strong>Description:</strong> {milestone.milestoneDescription}</p>
+                </li>
+              ))}
+              {activeMilestone && (
+                <li>
+                  <p><strong>Next Milestone Deadline:</strong> {new Date(activeMilestone.milestoneDDL).toLocaleDateString()}</p>
+                </li>
+              )}
+            </ul>
+            <div className="milestone-progress-container">
+              {milestones.map((milestone, index) => {
+                const isCompleted = milestone.milestonestatus === 'completed';
+                const isNext = milestone.milestonestatus === 'pending' && (index === 0 || milestones[index - 1].milestonestatus === 'completed');
+                return (
+                  <div
+                    key={milestone.milestoneId}
+                    className={`milestone-progress ${isCompleted ? 'completed' : isNext ? 'next' : 'upcoming'}`}
+                  ></div>
+                );
+              })}
+            </div>
+            {project.isCreator && <UserUploadProof projectId={project.projectId} />}
+          </div>
         )}
-
-        {project.isCreator ? (
-          <UserUploadProof projectId={project.projectId} /> // 渲染UserUploadProof组件
-        ) : (
-          <FundProject projectId={project.projectId} projectStatus={project.status} /> // 渲染FundProject组件
-        )}
-
       </div>
     </div>
   );

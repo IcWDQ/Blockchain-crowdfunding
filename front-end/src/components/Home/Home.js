@@ -20,11 +20,20 @@ function Home() {
     getUserAddress();
   }, []);
 
+  useEffect(() => {
+    if (activePage === 'allProjects') {
+      setFilteredProjects(filterActiveAndFundedProjects());
+    } else if (activePage === 'fundedProjects') {
+      setFilteredProjects(filterFundedProjects());
+    } else if (activePage === 'myProjects') {
+      setFilteredProjects(filterMyProjects());
+    }
+  }, [projects, activePage, userAddress]);
+
   const fetchProjects = async () => {
     try {
       const response = await axios.get('/api/projects');
       setProjects(response.data);
-      setFilteredProjects(response.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
@@ -47,7 +56,16 @@ function Home() {
   };
 
   const filterFundedProjects = () => {
-    return projects.filter(project => project.contributors.some(contributor => contributor.toLowerCase() === userAddress.toLowerCase()));
+    return projects.filter(project => 
+      (project.status.toLowerCase() === 'active' || project.status.toLowerCase() === 'funded') &&
+      project.contributors.some(contributor => contributor.toLowerCase() === userAddress.toLowerCase())
+    );
+  };
+
+  const filterActiveAndFundedProjects = () => {
+    return projects.filter(project => 
+      project.status.toLowerCase() === 'active' || project.status.toLowerCase() === 'funded'
+    );
   };
 
   const toggleCreateProject = () => {
@@ -57,22 +75,17 @@ function Home() {
 
   const showAllProjects = () => {
     setActivePage('allProjects');
-    setSelectedProject(null);
-    setFilteredProjects(projects);
+    setSelectedProject(null); // Ensure ProjectDetails is closed
   };
 
   const showMyProjects = () => {
-    const myProjects = filterMyProjects();
     setActivePage('myProjects');
-    setSelectedProject(null);
-    setFilteredProjects(myProjects);
+    setSelectedProject(null); // Ensure ProjectDetails is closed
   };
 
   const showFundedProjects = () => {
-    const fundedProjects = filterFundedProjects();
     setActivePage('fundedProjects');
-    setSelectedProject(null);
-    setFilteredProjects(fundedProjects);
+    setSelectedProject(null); // Ensure ProjectDetails is closed
   };
 
   const handleProjectClick = (project) => {
@@ -85,7 +98,7 @@ function Home() {
 
   const handleBackToProjects = () => {
     setSelectedProject(null);
-    setActivePage(activePage === 'createProject' ? 'createProject' : 'allProjects');
+    setActivePage('allProjects');
   };
 
   const handleSearch = (term) => {
@@ -94,6 +107,8 @@ function Home() {
       projectsToFilter = filterMyProjects();
     } else if (activePage === 'fundedProjects') {
       projectsToFilter = filterFundedProjects();
+    } else if (activePage === 'allProjects') {
+      projectsToFilter = filterActiveAndFundedProjects();
     }
 
     if (!term) {

@@ -1,40 +1,56 @@
+/* src/components/ProjectCard/ProjectCard.css */
 .project-card {
-  width: 100%; /* Ensure the card takes full width within the grid item */
-  height: auto; /* Let the height be determined by its content */
+  width: 100%;
+  height: auto;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 16px;
   background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slightly more noticeable shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s; /* Add transition for hover effect */
-  box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .project-card:hover {
-  transform: translateY(-5px); /* Slight lift on hover */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* More noticeable shadow on hover */
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 @media (prefers-color-scheme: dark) {
   .project-card {
-    background-color: #2e2e2e; /* Dark gray background */
-    color: white; /* White text */
+    background-color: #2e2e2e;
+    color: white;
     border: 1px solid #333;
   }
+}
+
+.card-header,
+.card-body,
+.card-footer {
+  margin-bottom: 16px;
+}
+
+.card-header {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.card-body {
+  flex: 1;
 }
 
 .project-name {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 8px;
-  white-space: nowrap; /* Prevents text wrapping */
-  overflow: hidden; /* Hides overflowing text */
-  text-overflow: ellipsis; /* Adds ellipsis to overflowing text */
-  max-width: 100%; /* Ensure it takes full width of the container */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .project-id,
@@ -51,16 +67,8 @@
 }
 
 .project-description {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal;
-  word-break: break-word;
   margin-top: 8px;
   font-size: 14px;
-  max-height: 3.6em; /* Approximate height for 3 lines of text */
 }
 
 .project-ddl {
@@ -69,22 +77,70 @@
 }
 
 .project-ddl .deadline-date {
-  font-weight: normal; /* Make deadline date text normal weight */
+  font-weight: normal;
 }
 
 .project-ddl .deadline-date.soon {
-  color: red; /* Only the date turns red if deadline is soon */
+  color: red;
+}
+
+.card-footer {
+  padding-top: 8px;
+  border-top: 1px solid #ddd;
+}
+
+.status-section {
+  margin-top: 16px;
+}
+
+.project-status {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
 .progress-bar {
-  margin-top: 8px;
-  height: 8px;
+  height: 20px; /* Adjusted for better visibility */
   background-color: #e9ecef;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
+  position: relative;
 }
 
 .progress {
   height: 100%;
-  background-color: #007bff;
+  background-color: #28a745; /* Green for funding progress */
+}
+
+.milestone-section {
+  margin-top: 16px;
+}
+
+.milestone-progress-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.milestone-progress {
+  flex: 1;
+  height: 16px;
+  margin-right: 5px;
+  border-radius: 8px;
+}
+
+.milestone-progress:last-child {
+  margin-right: 0;
+}
+
+.milestone-progress.completed {
+  background-color: #007bff; /* Blue for completed milestones */
+}
+
+.milestone-progress.next {
+  background-color: #ffc107; /* Yellow for next milestone */
+}
+
+.milestone-progress.upcoming {
+  background-color: #e9ecef; /* Grey for upcoming milestones */
 }
