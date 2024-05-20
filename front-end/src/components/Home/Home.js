@@ -1,5 +1,4 @@
-// src/components/Home/Home.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import Navbar from '../Navbar/Navbar';
@@ -14,21 +13,6 @@ function Home() {
   const [userAddress, setUserAddress] = useState('');
   const [selectedProject, setSelectedProject] = useState(null);
   const [activePage, setActivePage] = useState('allProjects');
-
-  useEffect(() => {
-    fetchProjects();
-    getUserAddress();
-  }, []);
-
-  useEffect(() => {
-    if (activePage === 'allProjects') {
-      setFilteredProjects(filterActiveAndFundedProjects());
-    } else if (activePage === 'fundedProjects') {
-      setFilteredProjects(filterFundedProjects());
-    } else if (activePage === 'myProjects') {
-      setFilteredProjects(filterMyProjects());
-    }
-  }, [projects, activePage, userAddress]);
 
   const fetchProjects = async () => {
     try {
@@ -45,28 +29,43 @@ function Home() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const address = await signer.getAddress();
-      setUserAddress(address);
+      setUserAddress(address.toLowerCase());
     } catch (error) {
       console.error('Error getting user address:', error);
     }
   };
 
-  const filterMyProjects = () => {
-    return projects.filter(project => project.creator.toLowerCase() === userAddress.toLowerCase());
-  };
+  useEffect(() => {
+    fetchProjects();
+    getUserAddress();
+  }, []);
 
-  const filterFundedProjects = () => {
+  const filterMyProjects = useCallback(() => {
+    return projects.filter(project => project.creator.toLowerCase() === userAddress);
+  }, [projects, userAddress]);
+
+  const filterFundedProjects = useCallback(() => {
     return projects.filter(project => 
       (project.status.toLowerCase() === 'active' || project.status.toLowerCase() === 'funded') &&
-      project.contributors.some(contributor => contributor.toLowerCase() === userAddress.toLowerCase())
+      project.contributors.some(contributor => contributor.toLowerCase() === userAddress)
     );
-  };
+  }, [projects, userAddress]);
 
-  const filterActiveAndFundedProjects = () => {
+  const filterActiveAndFundedProjects = useCallback(() => {
     return projects.filter(project => 
       project.status.toLowerCase() === 'active' || project.status.toLowerCase() === 'funded'
     );
-  };
+  }, [projects]);
+
+  useEffect(() => {
+    if (activePage === 'allProjects') {
+      setFilteredProjects(filterActiveAndFundedProjects());
+    } else if (activePage === 'fundedProjects') {
+      setFilteredProjects(filterFundedProjects());
+    } else if (activePage === 'myProjects') {
+      setFilteredProjects(filterMyProjects());
+    }
+  }, [projects, activePage, userAddress, filterActiveAndFundedProjects, filterFundedProjects, filterMyProjects]);
 
   const toggleCreateProject = () => {
     setActivePage('createProject');
@@ -91,7 +90,7 @@ function Home() {
   const handleProjectClick = (project) => {
     setSelectedProject({
       ...project,
-      isCreator: project.creator.toLowerCase() === userAddress.toLowerCase()
+      isCreator: project.creator.toLowerCase() === userAddress
     });
     setActivePage('projectDetails');
   };
@@ -139,7 +138,7 @@ function Home() {
         ) : activePage === 'createProject' ? (
           <CreateProject />
         ) : (
-          <ProjectList projects={filteredProjects} onProjectClick={handleProjectClick} />
+          <ProjectList projects={filteredProjects} onProjectClick={handleProjectClick} activePage={activePage} />
         )}
       </div>
     </div>

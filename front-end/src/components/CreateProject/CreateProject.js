@@ -1,4 +1,3 @@
-// src/components/CreateProject/CreateProject.js
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import { provider, contract } from '../../ethers';
@@ -81,7 +80,8 @@ function CreateProject() {
         projectId: projectId.toNumber(),
         milestoneId: index,
         projectName,
-        milestoneDDL: new Date(projectDeadline.getTime() + parseInt(days, 10) * 86400 * 1000)
+        milestoneDDL: new Date(projectDeadline.getTime() + parseInt(days, 10) * 86400 * 1000),
+        goal: ethers.utils.parseEther(milestoneGoals[index]).toString() // 添加 goal 字段
       }));
 
       const projectData = {

@@ -1,4 +1,3 @@
-// src/components/FundProject/FundProject.js
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import { provider, contract } from '../../ethers';
@@ -43,9 +42,6 @@ function FundProject({ projectId }) {
         console.error('Error updating database', error);
         alert('Error updating database');
       }
-      
-      setAmount('');
-      setError('');
     } catch (error) {
       console.error('Error funding project', error);
       setError('Error funding project');

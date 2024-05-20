@@ -1,4 +1,3 @@
-// src/components/UserUploadProof/UserUploadProof.js
 import React, { useState, useEffect } from 'react';
 import { provider } from '../../ethers'; // Assumes you have a configured ethers provider
 import axios from 'axios';
@@ -7,8 +6,8 @@ import './UserUploadProof.css';
 function UserUploadProof({ projectId }) {
   const [milestoneDescription, setMilestoneDescription] = useState('');
   const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState('');
   const [currentUser, setCurrentUser] = useState('');
-  const [activeMilestone, setActiveMilestone] = useState(null);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -16,35 +15,18 @@ function UserUploadProof({ projectId }) {
       setCurrentUser(accounts[0].toLowerCase());
     };
     fetchCurrentUser();
-    fetchActiveMilestone(projectId);
-  }, [projectId]);
-
-  const fetchActiveMilestone = async (projectId) => {
-    try {
-      const response = await axios.get(`/api/projects/${projectId}`);
-      const milestones = response.data.milestones;
-      const pendingMilestone = milestones.find(milestone => milestone.milestonestatus === 'pending');
-      setActiveMilestone(pendingMilestone);
-    } catch (error) {
-      console.error('Error fetching active milestone:', error);
-    }
-  };
+  }, []);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+    setFileName(e.target.files[0].name);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!activeMilestone) {
-      alert('No pending milestone found');
-      return;
-    }
-
     const formData = new FormData();
     formData.append('projectId', projectId);
-    formData.append('milestoneId', activeMilestone.milestoneId);
     formData.append('milestoneDescription', milestoneDescription);
     formData.append('otherDocument', file);
     formData.append('currentUser', currentUser);
@@ -61,7 +43,6 @@ function UserUploadProof({ projectId }) {
   return (
     <div className="upload-proof-container">
       <h2>Upload Milestone Proof</h2>
-      {activeMilestone && <p>Uploading proof for Milestone ID: {activeMilestone.milestoneId}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Milestone Description: </label>
@@ -72,7 +53,10 @@ function UserUploadProof({ projectId }) {
           />
         </div>
         <div className="file-input-container">
-          <label className="file-input-label" htmlFor="file-input">Choose File</label>
+          <label className="file-input-label" htmlFor="file-input">
+            Choose File
+            {fileName && <span className="file-name">{fileName}</span>}
+          </label>
           <input
             id="file-input"
             type="file"

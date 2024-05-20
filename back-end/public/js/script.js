@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <td>${milestone.projectId}</td>
             <td>${milestone.projectName}</td>
             <td>${milestone.milestoneId}</td>
+            <td>${milestone.goal}</td>
             <td>${milestone.milestoneDescription}</td>
             <td>${milestone.otherDocuments}</td>
             <td>${milestone.milestonestatus}</td>

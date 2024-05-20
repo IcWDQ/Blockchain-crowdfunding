@@ -1,4 +1,3 @@
-/* src/components/ProjectCard/ProjectCard.css */
 .project-card {
   width: 100%;
   height: auto;
@@ -18,6 +17,10 @@
 .project-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.project-card.gray {
+  filter: grayscale(100%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -133,14 +136,14 @@
   margin-right: 0;
 }
 
-.milestone-progress.completed {
-  background-color: #007bff; /* Blue for completed milestones */
+.milestone-progress.approved {
+  background-color: green; /* Green for approved milestones */
 }
 
-.milestone-progress.next {
-  background-color: #ffc107; /* Yellow for next milestone */
+.milestone-progress.pending {
+  background-color: gray; /* Gray for pending milestones */
 }
 
 .milestone-progress.upcoming {
-  background-color: #e9ecef; /* Grey for upcoming milestones */
+  background-color: lightgray; /* Light gray for upcoming milestones */
 }

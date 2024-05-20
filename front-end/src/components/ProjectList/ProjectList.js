@@ -1,9 +1,8 @@
-// src/components/ProjectList/ProjectList.js
 import React from 'react';
 import ProjectCard from '../ProjectCard/ProjectCard';
 import './ProjectList.css';
 
-function ProjectList({ projects, onProjectClick }) {
+function ProjectList({ projects, onProjectClick, activePage }) {
   if (!projects.length) {
     return <div className="no-projects">No project yet!</div>;
   }
@@ -21,9 +20,10 @@ function ProjectList({ projects, onProjectClick }) {
           description={project.projectDescription}
           projectDDL={project.projectDDL}
           status={project.status}
-          fundingGoal={project.fundingGoal} // Ensure this is being passed
-          amountRaised={project.amountRaised} // Ensure this is being passed
+          fundingGoal={project.fundingGoal}
+          amountRaised={project.amountRaised}
           onClick={() => onProjectClick(project)}
+          activePage={activePage} // 传递 activePage 属性
         />
       ))}
     </div>

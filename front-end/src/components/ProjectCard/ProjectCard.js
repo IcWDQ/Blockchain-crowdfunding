@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { ethers } from 'ethers';
 import './ProjectCard.css';
 
-function ProjectCard({ id, name, category, description, projectDDL, status, fundingGoal, amountRaised, onClick }) {
+function ProjectCard({ id, name, category, description, projectDDL, status, fundingGoal, amountRaised, onClick, activePage }) {
   const [milestones, setMilestones] = useState([]);
 
   useEffect(() => {
-    if (status === 'funded') {
+    if (status.toLowerCase() === 'funded') {
       fetchMilestones(id);
     }
   }, [id, status]);
@@ -17,7 +16,8 @@ function ProjectCard({ id, name, category, description, projectDDL, status, fund
       const response = await axios.get('/api/milestones', {
         params: { projectId }
       });
-      setMilestones(response.data);
+      const projectMilestones = response.data.filter(milestone => milestone.projectId === projectId);
+      setMilestones(projectMilestones);
     } catch (error) {
       console.error('Error fetching milestones:', error);
     }
@@ -45,22 +45,17 @@ function ProjectCard({ id, name, category, description, projectDDL, status, fund
   const displayedDescription = formatDescription(description);
   const displayedTitle = formatTitle(name);
 
-  const fundingGoalString = fundingGoal ? fundingGoal.toString() : '0';
-  const amountRaisedString = amountRaised ? amountRaised.toString() : '0';
+  // Convert fundingGoal to Ether and ensure amountRaised is in Ether
+  const fundingGoalInEther = (fundingGoal / 10 ** 18).toString();
+  const amountRaisedInEther = parseFloat(amountRaised).toString();
 
-  const fundingProgress = fundingGoal ? (amountRaised / fundingGoal) * 100 : 0;
-  const formattedFundingGoal = ethers.utils.formatEther(fundingGoalString);
-  const formattedAmountRaised = ethers.utils.formatEther(amountRaisedString);
+  const fundingProgress = (parseFloat(amountRaisedInEther) / parseFloat(fundingGoalInEther)) * 100;
 
-  console.log('ProjectCard Debug:');
-  console.log('ID:', id);
-  console.log('Status:', status);
-  console.log('Funding Goal:', formattedFundingGoal);
-  console.log('Amount Raised:', formattedAmountRaised);
-  console.log('Funding Progress:', fundingProgress);
+  // Determine if the card should be gray
+  const isGray = (activePage === 'myProjects' || activePage === 'fundedProjects') && !(status.toLowerCase() === 'funded' || status.toLowerCase() === 'active');
 
   return (
-    <div className="project-card" onClick={onClick}>
+    <div className={`project-card ${isGray ? 'gray' : ''}`} onClick={onClick}>
       <div className="card-header">
         <h3 className="project-name">{displayedTitle}</h3>
         <p className="project-id"><strong>ID:</strong> {id}</p>
@@ -78,27 +73,27 @@ function ProjectCard({ id, name, category, description, projectDDL, status, fund
         </p>
       </div>
       <div className="card-footer">
-        {status === 'active' ? (
+        {status.toLowerCase() === 'active' ? (
           <div className="status-section">
-            <p className="project-status">Crowdfunding Project - Raised: {formattedAmountRaised} / {formattedFundingGoal} ETH</p>
+            <p className="project-status">Crowdfunding Project - Raised: {amountRaisedInEther} / {fundingGoalInEther} ETH</p>
             <div className="progress-bar">
               <div className="progress" style={{ width: `${fundingProgress}%` }}></div>
             </div>
           </div>
         ) : null}
 
-        {status === 'funded' && milestones.length > 0 ? (
+        {status.toLowerCase() === 'funded' && milestones.length > 0 ? (
           <div className="milestone-section">
-            <p className="project-status">Milestone Progress - {milestones.filter(m => m.milestonestatus === 'completed').length} of {milestones.length} completed</p>
+            <p className="project-status">Milestone Progress - {milestones.filter(m => m.milestonestatus === 'approved').length} of {milestones.length} approved</p>
             <div className="milestone-progress-container">
               {milestones.map((milestone, index) => {
                 const milestoneStatus = milestone.milestonestatus;
-                const isCompleted = milestoneStatus === 'completed';
-                const isNext = milestoneStatus === 'pending' && (index === 0 || milestones[index - 1].milestonestatus === 'completed');
+                const isApproved = milestoneStatus === 'approved';
+                const isPending = milestoneStatus === 'pending';
                 return (
                   <div
-                    key={milestone.milestoneId}
-                    className={`milestone-progress ${isCompleted ? 'completed' : isNext ? 'next' : 'upcoming'}`}
+                    key={`${id}-${milestone.milestoneId}`} // Use milestoneId as key
+                    className={`milestone-progress ${isApproved ? 'approved' : isPending ? 'pending' : 'upcoming'}`}
                   ></div>
                 );
               })}

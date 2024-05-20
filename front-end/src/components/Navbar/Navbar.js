@@ -4,7 +4,7 @@ import MetaMaskInfo from '../MetaMaskInfo/MetaMaskInfo';
 import { FaSearch } from 'react-icons/fa';  // 导入放大镜图标
 import './Navbar.css';
 
-function Navbar({ onCreateProject, onShowAllProjects, onShowMyProjects, onShowFundedProjects, onSearch, activePage }) {
+function Navbar({ onCreateProject, onShowAllProjects, onShowMyProjects, onShowFundedProjects, onSearch, activePage, onAddressChange }) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearchChange = (e) => {
@@ -31,7 +31,7 @@ function Navbar({ onCreateProject, onShowAllProjects, onShowMyProjects, onShowFu
               <FaSearch className="search-icon" />
             </div>
           )}
-          <MetaMaskInfo />
+          <MetaMaskInfo onAddressChange={onAddressChange} />
         </div>
       </div>
       <div className="navbar-bottom">

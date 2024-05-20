@@ -1,23 +1,12 @@
-/* src/components/FundProject/FundProject.css */
 .fund-project-container {
   margin-top: 20px;
 }
 
-.fund-project-container h2 {
-  margin-bottom: 16px;
+.input-group {
+  margin-bottom: 15px;
 }
 
-.fund-project-container .input-group {
-  margin-bottom: 16px;
-}
-
-.fund-project-container label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.fund-project-container input {
+.fund-input {
   width: 100%;
   padding: 10px;
   border: 1px solid #ced4da;
@@ -26,29 +15,29 @@
   font-size: 16px;
 }
 
-.fund-project-container button {
+.error {
+  color: red;
+  margin-top: 5px;
+}
+
+.fund-button {
   display: inline-block;
   padding: 10px 20px;
   font-size: 16px;
   color: #fff;
-  background-color: #28a745;
+  background-color: #007bff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 10px;
+  text-align: center;
 }
 
-.fund-project-container button:hover {
-  background-color: #218838;
+.fund-button:hover {
+  background-color: #0056b3;
 }
 
-.fund-project-container button:disabled {
-  background-color: #6c757d;
+.fund-button:disabled {
+  background-color: #007bff;
+  opacity: 0.6;
   cursor: not-allowed;
-}
-
-.fund-project-container .error {
-  color: red;
-  font-size: 14px;
-  margin-top: 8px;
 }

@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
 const cron = require('node-cron');
+const { ethers } = require('ethers');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -91,7 +92,8 @@ const milestoneSchema = new mongoose.Schema({
   milestoneDescription: { type: String },
   otherDocuments: { type: String },
   milestonestatus: { type: String },
-  milestoneDDL: { type: Date }
+  milestoneDDL: { type: Date },
+  goal: { type: Number, required: true}
 });
 
 milestoneSchema.index({ projectId: 1, milestoneId: 1 }, { unique: true });
@@ -167,7 +169,8 @@ app.post('/api/projects', async (req, res) => {
       ...ms,
       milestoneDescription: '',
       milestonestatus: 'Pending',
-      milestoneDDL: new Date(ms.milestoneDDL) // 确保 milestoneDDL 是 Date 对象
+      milestoneDDL: new Date(ms.milestoneDDL), // 确保 milestoneDDL 是 Date 对象
+      goal: ms.goal
     }));
 
     await Milestone.insertMany(milestones, { session });
@@ -205,6 +208,7 @@ app.get('/api/projects/:id', (req, res) => {
     });
 });
 
+
 app.post('/api/projects/approve', async (req, res) => {
   const { projectId } = req.body;
 
@@ -227,29 +231,42 @@ app.post('/api/projects/approve', async (req, res) => {
   }
 });
 
-
 app.post('/api/projects/fund', async (req, res) => {
   const { projectId, amount } = req.body;
 
   try {
+    console.log(`Received funding request for project ${projectId} with amount ${amount}`);
+
     const project = await Project.findOne({ projectId });
     if (!project) {
+      console.log('Project not found');
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    const amountInWei = ethers.utils.parseEther(amount.toString());
-    project.amountRaised += amount; // 更新已筹集资金，以 eth 为单位
+    console.log(`Found project: ${project}`);
 
-    // 检查是否已达到筹资目标
-    const amountRaisedInWei = ethers.utils.parseEther(project.amountRaised.toString());
-    if (amountRaisedInWei.gte(ethers.BigNumber.from(project.fundingGoal))) {
+    const amountInEth = parseFloat(amount);
+    const amountInWei = amountInEth * 10 ** 18;
+
+    console.log(`Amount in Wei: ${amountInWei}`);
+    console.log(`Amount in Eth: ${amountInEth}`);
+
+    project.amountRaised += amountInEth; // 更新已筹集资金，以 eth 为单位
+
+    console.log(`Updated amountRaised: ${project.amountRaised}`);
+
+    // 检查是否已达到筹资目标，fundingGoal 是 wei 为单位
+    const fundingGoalInEth = project.fundingGoal / 10 ** 18;
+    if (project.amountRaised >= fundingGoalInEth) {
       project.status = 'Funded';
     }
 
     await project.save();
+    console.log('Project updated successfully');
 
     res.json(project);
   } catch (error) {
+    console.error('Error updating project:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -289,7 +306,7 @@ app.post('/api/projects/withdrawFunds', async (req, res) => {
     milestone.milestonestatus = 'Completed';
     await milestone.save();
 
-    project.amountRaised -= milestone.goal; // 减去里程碑的资金量
+    project.amountRaised -= milestone.goal / 10 ** 18; // 减去里程碑的资金量
 
     // Check if all milestones are completed
     const allMilestonesCompleted = await Milestone.find({ projectId, milestonestatus: { $ne: 'Completed' } }).countDocuments() === 0;
@@ -418,6 +435,22 @@ app.get('/api/milestones', (req, res) => {
     .then(milestones => res.json(milestones))
     .catch(err => res.status(400).json({ error: err.message }));
 });
+app.get('/api/projects/:projectId/milestones/:milestoneId', async (req, res) => {
+  const { projectId, milestoneId } = req.params;
+
+  try {
+    const milestone = await Milestone.findOne({ projectId: parseInt(projectId, 10), milestoneId: parseInt(milestoneId, 10) });
+    if (!milestone) {
+      return res.status(404).json({ error: 'Milestone not found' });
+    }
+
+    res.json({ milestoneStatus: milestone.milestonestatus });
+  } catch (error) {
+    console.error('Error fetching milestone status:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 app.post('/api/milestones/approve', async (req, res) => {
   const { projectId, milestoneId } = req.body;
@@ -472,6 +505,7 @@ cron.schedule('* * * * *', async () => {
       await project.save();
       console.log(`Project ${project.projectId} has been cancelled and funds refunded`);
     }
+    
 
     // 查找所有状态为 'Cancelled' 的项目
     const cancelledProjects = await Project.find({
