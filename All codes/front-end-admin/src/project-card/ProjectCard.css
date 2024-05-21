@@ -1,0 +1,74 @@
+.project-card {
+  width: 400px;
+  height: 280px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  .project-card {
+    background-color: #2e2e2e; /* 深灰色背景 */
+    color: white; /* 白色文字 */
+    border: 1px solid #333;
+  }
+}
+
+.project-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.project-id,
+.project-category,
+.project-ddl {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.project-id strong,
+.project-category strong,
+.project-ddl strong {
+  font-weight: bold;
+}
+
+.project-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* 限制显示三行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; /* 确保文本正常换行 */
+  word-break: break-word; /* 确保长单词换行 */
+  margin-top: 8px;
+}
+
+.project-ddl {
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.project-ddl.soon {
+  color: red; /* 如果截止日期在6天内显示红色 */
+}
+
+.progress-bar {
+  margin-top: 8px;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background-color: #007bff;
+}
