@@ -113,7 +113,7 @@
 
 .progress-bar {
   height: 20px; /* Adjusted for better visibility */
-  background-color: #e9ecef;
+  background-color: lightgray;
   border-radius: 8px;
   overflow: hidden;
   position: relative;
@@ -150,7 +150,7 @@
 }
 
 .milestone-progress.pending {
-  background-color: gray; /* Gray for pending milestones */
+  background-color: lightgray; /* Gray for pending milestones */
 }
 
 .milestone-progress.upcoming {

@@ -16,12 +16,14 @@ function Home() {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get('/api/projects');
-      setProjects(response.data);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/projects`);
+      console.log('Fetched projects:', response.data); // 检查返回的数据
+      setProjects(Array.isArray(response.data) ? response.data : []); // 确保设置的是数组
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
   };
+  
 
   const getUserAddress = async () => {
     try {
@@ -41,10 +43,18 @@ function Home() {
   }, []);
 
   const filterMyProjects = useCallback(() => {
+    if (!Array.isArray(projects)) {
+      console.error('Projects is not an array:', projects);
+      return [];
+    }
     return projects.filter(project => project.creator.toLowerCase() === userAddress);
   }, [projects, userAddress]);
 
   const filterFundedProjects = useCallback(() => {
+    if (!Array.isArray(projects)) {
+      console.error('Projects is not an array:', projects);
+      return [];
+    }
     return projects.filter(project => 
       (project.status.toLowerCase() === 'active' || project.status.toLowerCase() === 'funded') &&
       project.contributors.some(contributor => contributor.toLowerCase() === userAddress)
@@ -52,6 +62,10 @@ function Home() {
   }, [projects, userAddress]);
 
   const filterActiveAndFundedProjects = useCallback(() => {
+    if (!Array.isArray(projects)) {
+      console.error('Projects is not an array:', projects);
+      return [];
+    }
     return projects.filter(project => 
       project.status.toLowerCase() === 'active' || project.status.toLowerCase() === 'funded'
     );
@@ -63,6 +77,10 @@ function Home() {
   };
 
   useEffect(() => {
+    if (!Array.isArray(projects)) {
+      console.error('Projects is not an array:', projects);
+      return;
+    }
     if (activePage === 'allProjects') {
       setFilteredProjects(filterActiveAndFundedProjects());
     } else if (activePage === 'fundedProjects') {
@@ -99,7 +117,6 @@ function Home() {
     });
     setActivePage('projectDetails');
   };
-
 
   const handleSearch = (term) => {
     let projectsToFilter = projects;
